@@ -1,0 +1,42 @@
+{
+  "mainWS":
+  [
+{"E": 637165, "N": 145192, "Name": "Leathercote Point",
+"Note": ""},
+{"E": 513852, "N": 143227, "Name": "Leith Hill",
+"Note": "to Arun S, to Mole (Thames) N"},
+{"E": 402712, "N": 166927, "Name": "Morgan's Hill / Furze Knoll",
+"Note": "to Salisbury Avon S, to Marden (Bristol Avon N), Kennet (Thames) NE"},
+{"E": 395037, "N": 203530, "Name": "apparently 200m near Sapperton",
+"Note": "Frome (Avon, Severn) to W, Thames Head some way to SE"},
+{"E": 437775, "N": 248377, "Name": "Edge Hill",
+"Note": "Dene (Stratford Avon) W, Sor Brook (Cherwell, Thames) S"},
+{"E": 451640, "N": 257845, "Name": "Hellidon, windmill at 204m",
+"Note": "Leam to Bristol Channel to N, Cherwell to Thames to SE"},
+{"E": 469165, "N": 278400, "Name": "197 at Naseby",
+"Note": "Stratford Avon W, Ise (Nene) E, Nene E"},
+{"E": 396842, "N": 277802, "Name": "Windmill Hill (Waseley Hills Country Park)",
+"Note": "to Stour (Severn) W, src of Rea (Tame, Trent) NE"},
+{"E": 377405, "N": 340412, "Name": "Slymansdale Camp Hill, Maer Hills",
+"Note": "to Weaver (Mersey) N, to Sow (Trent) SE, to Tern (Mersey) S"},
+{"E": 400142, "N": 363132, "Name": "The Roaches",
+"Note": "to Dane N, Churnet (Trent) S"},
+{"E": 407603, "N": 387029, "Name": "Kinder Scout 633",
+"Note": "(up via spur to S)"},
+{"E": 362140, "N": 599886, "Name": "Peel Fell",
+"Note": "Liddel Water (Kershope Burn) SW, to Tweed N, to Kielder SE"},
+{"E": 305435, "N": 613381, "Name": "Annanhead Hill",
+"Note": "Annan (Solway) S, Tweed's Well (Tweed) N"},
+{"E": 271847, "N": 681485, "Name": "Tomtain",
+"Note": "Carron N, streams to Kelvin S"},
+{"E": 249372, "N": 771887, "Name": "Ben Alder",
+"Note": ""},
+{"E": 201543, "N": 819308, "Name": "Beinn Fhada",
+"Note": ""},
+{"E": 230090, "N": 920002, "Name": "Conival",
+"Note": ""},
+{"E": 319972, "N": 976780, "Name": "Dunnet Head",
+"Note": ""}
+  ]
+
+}
