@@ -11,7 +11,7 @@
   <script src="wgs_airy.js"></script>
 
   <style type="text/css">
-    body
+  body
 	{
 	  margin: 0px;
 	}
@@ -27,7 +27,7 @@
   }
   .olControlScaleLineTop, .olControlScaleLineBottom
   {
-  font-size: 14px;
+    font-size: 14px;
   }
 
 	#watershedHeader
@@ -66,7 +66,7 @@
 	}
 
 	#mapcontainer { margin-left: 320px; }
-    #sidebar { width: 318px; float: left; }
+  #sidebar { width: 318px; float: left; }
 
 	#awwTitle
 	{
@@ -93,14 +93,12 @@
 		line-height: 1.8em;
 	}
 
-    .olPopupContent
-    {
+  .olPopupContent
+  {
 		font-family: Verdana, Geneva, sans-serif;
 		font-size: 0.8em;
-    }
+  }
   </style>
-
-
 
 </head>
 <body>
@@ -122,16 +120,6 @@
   </div>
 
 <script>
-
-	//map.removeLayer(defaultMarkerLayer);
-	//var vlzi = defaultVectorLayer.getZIndex();
-	//map.removeLayer(defaultVectorLayer);
-    //var osmLayer = new OpenSpace.Layer.OSM();
-    //map.addLayer(osmLayer);
-
-    //console.log("default marker layer z index is " + defaultMarkerLayer.getZIndex());
-
-
 
 	var lastUpdLbrt = [0,0,0,0];
 
@@ -279,9 +267,6 @@
     }
 	}
 
-
-
-
 	function replaceRoute(points, alreadyComplete)
   {
 		//kill the existing route (removeFeatures()?)
@@ -309,10 +294,8 @@
 		defaultVectorLayer.addFeatures([lineFeature]);
   }
 
-
 	function addMarker(e, n, txt)
 	{
-		//console.log("addMarker " + e + ", " + n);
 		for (m = 0; m < markerList.length; m++)
 		{
 			var cm = markerList[m];
@@ -322,14 +305,12 @@
 				markerList.splice(m, 1);
 				m --;
 				map.removeMarker(cm);
-				//console.log("removing marker cm with " + cm.lonlat.lon + ", " + cm.lonlat.lat);
 			}
 		}
 
 		var pos = new OpenSpace.MapPoint(e, n);
 		var m1 = map.createMarker(pos, getWpIcon(), txt);
 		markerList.push(m1);
-		//console.log("pushed marker " + e + ", " + n);
 	}
 
 
@@ -337,25 +318,17 @@
 	function markersCallback(data)
   {
     var points = [];
-    //console.log("markersCallback");
     for (p in data)
     {
       if ((!isNaN(data[p].E) && !isNaN(data[p].N))
           && (currentPos.E != data[p].E && currentPos.N != data[p].N))
       {
-        //console.log("E " + route[p].E + ", N " + route[p].N + ", name " + route[p].Name + ", note " + route[p].Note);
-        //var pt = addOScoordsToList(route[p].E, route[p].N);
-        //pt = new OpenLayers.Geometry.Point(route[p].E, route[p].N);
-        //points.push(pt);
-
         var popupBoxNote =
           (data[p].distSoFar / 1000).toFixed(1) + ' km from Dunnet Head<br>' +
           (data[p].distRemaining / 1000).toFixed(1) + ' km to Leathercote Point<br>' +
           data[p].Note;
         var popupText = getPopupBoxText(data[p].E, data[p].N,
           data[p].Name, popupBoxNote);
-        //var marker = new OpenLayers.Marker(pos);
-        //markers.addMarker(marker);
         addMarker(data[p].E, data[p].N, popupText);
       }
     }
@@ -408,22 +381,6 @@
     }
 
     replaceRoute(points, alreadyComplete);
-/*
-    var points = [];
-		var allCoords = data.split(";");
-		for (var coordPair = 0; coordPair < allCoords.length; coordPair++)
-		{
-			if ("" != allCoords[coordPair])
-			{
-				var ca = allCoords[coordPair].split(",");
-
-				var pt = new OpenLayers.Geometry.Point(ca[0], ca[1]);
-				points.push(pt);
-			}
-		}
-
-    replaceRoute(points, alreadyComplete);
-    */
 	}
 
 	function recvCoordsDataCallbackCompl(data)
@@ -530,15 +487,8 @@
 		});
 	}
 
-	var loadRoute = function(rdp)
+	var loadRoute = function()
 	{
-    //rdp is unused, so ignoring
-
-		//rdpSuffix = "";
-		//if (rdp > 0)
-		//{
-		//	rdpSuffix = "&rdp=" + rdp;
-		//}
 		$.ajax({
 		  url: "api/waypoints/done",
 			dataType: 'json',
@@ -587,8 +537,6 @@
 		initMap();
 		loadRoute();
 	}
-
-
 
 	$(document).ready(start);
 
