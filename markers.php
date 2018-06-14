@@ -1,7 +1,7 @@
 <?php
 
 //get left, right, top, bottom bounds from args
-$leftBound = 200000;
+$leftBound = 100000;
 $rightBound = 700000;
 $bottomBound = 100000;
 $topBound = 1000000;
