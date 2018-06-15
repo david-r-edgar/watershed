@@ -122,7 +122,7 @@
     <div id="mapdiv"></div>
   </div>
 
-  <script type="text/javascript" src="map.js"></script>
+  <script src="map.js"></script>
 
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
