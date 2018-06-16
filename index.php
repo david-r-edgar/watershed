@@ -2,6 +2,8 @@
 <html>
 <head>
   <title>A Watershed Walk - map</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
   <link rel="shortcut icon" href="http://www.loughrigg.org/watershed/watershed.ico" />
 
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
