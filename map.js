@@ -136,9 +136,9 @@ function replaceRoute(points, alreadyComplete) {
   var mapProj = map.getProjectionObject();
   var dist = lineString.getGeodesicLength(mapProj) / 1000;
   if (true == alreadyComplete) {
-    $("#routeLenCompl").text(dist.toFixed(1));
+    $(".routeLenCompl").text(dist.toFixed(1));
   } else {
-    $("#routeLenToDo").text(dist.toFixed(1));
+    $(".routeLenToDo").text(dist.toFixed(1));
   }
 
   var line_style = {strokeColor: "#AA0099", strokeOpacity: 1, strokeWidth: 3};
