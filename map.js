@@ -10,8 +10,7 @@ var wpIconSize = new OpenLayers.Size(14, 20);
 var wpIconOffset = new OpenLayers.Pixel(-7, -18);
 var wpIconInfoWindowAnchor = new OpenLayers.Pixel(9, 18);
 
-function getWpIcon()
-{
+function getWpIcon() {
   var iconUrl = "transpSP.png";
   var wpIcon = new OpenSpace.Icon(iconUrl, wpIconSize, wpIconOffset,
                                       null, wpIconInfoWindowAnchor);
@@ -22,8 +21,7 @@ var issuesIconSize = new OpenLayers.Size(21, 30);
 var issuesIconOffset = new OpenLayers.Pixel(-10, -30);
 var issuesIconInfoWindowAnchor = new OpenLayers.Pixel(16, 13);
 
-function getIssuesIcon()
-{
+function getIssuesIcon() {
   var iconUrl = "issue.png";
   var issuesIcon = new OpenSpace.Icon(iconUrl, issuesIconSize, issuesIconOffset,
                                         null, issuesIconInfoWindowAnchor);
@@ -34,8 +32,7 @@ var watersourcesIconSize = new OpenLayers.Size(19, 28);
 var watersourcesIconOffset = new OpenLayers.Pixel(-9, -28);
 var watersourcesIconInfoWindowAnchor = new OpenLayers.Pixel(16, 9);
 
-function getWatersourcesIcon()
-{
+function getWatersourcesIcon() {
   var iconUrl = "watersource.png";
   var watersourcesIcon = new OpenSpace.Icon(iconUrl, watersourcesIconSize,
                                             watersourcesIconOffset, null,
@@ -43,10 +40,12 @@ function getWatersourcesIcon()
   return watersourcesIcon;
 }
 
-function getPopupBoxText(posE, posN, heading1, description, prefix)
-{
+function getPopupBoxText(posE, posN, heading1, description, prefix) {
   var osGR = new OsGridRef(posE, posN);
   var osLL = OsGridRef.osGridToLatLong(osGR);
+
+  console.log('osGR', osGR)
+
   var wgs84LL = CoordTransform.convertOSGB36toWGS84(osLL);
   var geohackUrl = "http://toolserver.org/~geohack/geohack.php?pagename="
               + heading1 + "&params=" + wgs84LL._lat + "_N_"
@@ -55,11 +54,14 @@ function getPopupBoxText(posE, posN, heading1, description, prefix)
               + wgs84LL._lat + "~" + wgs84LL._lon + "&lvl=15&sty=s";
 
   var txt = "<b>";
-  if (typeof prefix == "string" && prefix.length > 0)
-  { txt += prefix; }
+  if (typeof prefix == "string" && prefix.length > 0) {
+    txt += prefix;
+  }
   txt += heading1 + "</b>\r\n<br>\r\n";
-  if (typeof description == "string" && description.length > 0)
-  { txt += description + "\r\n<br>\r\n"; }
+  if (typeof description == "string" && description.length > 0) {
+    txt += description + "\r\n<br>\r\n";
+  }
+  txt += "<p>\r\ngrid ref: " + osGR.easting + ", " + osGR.northing + "</p>\r\n"
   txt += "<ul>\r\n<li><a href=\"" + geohackUrl
          + "\" target='_blank'>geohack map sources</a></li>\r\n<li>"
          + "<a href=\"" + bingUrl
@@ -67,27 +69,19 @@ function getPopupBoxText(posE, posN, heading1, description, prefix)
   return txt;
 }
 
-//function handleZoomend()
-//{
-//}
-
-function handleMoveend()
-{
-  if (map.zoom < 2)
-  {
+function handleMoveend() {
+  if (map.zoom < 2) {
     map.clearMarkers();
     markerList = [];
   }
 
-  if (map.zoom >= 4)
-  {
+  if (map.zoom >= 4) {
     var oBnds = map.getExtent();
     var lbrt = oBnds.toArray();
     if ((Math.abs(lbrt[0] - lastUpdLbrt[0]) > 30000)
       || (Math.abs(lbrt[1] - lastUpdLbrt[1]) > 30000)
       || (Math.abs(lbrt[2] - lastUpdLbrt[2]) > 30000)
-      || (Math.abs(lbrt[3] - lastUpdLbrt[3]) > 30000))
-    {
+      || (Math.abs(lbrt[3] - lastUpdLbrt[3]) > 30000)) {
       var url = "api/waypoints/markers?xl=" + (lbrt[0] - 30000) + "&xr=" + (lbrt[2] + 30000) +
               "&yb=" + (lbrt[1] - 30000) + "&yt=" + (lbrt[3] + 30000);
       $.ajax({
@@ -99,16 +93,12 @@ function handleMoveend()
       lastUpdLbrt = lbrt;
     }
     defaultMarkerLayer.setVisibility(true);
-  }
-  else
-  {
+  } else {
     defaultMarkerLayer.setVisibility(false);
   }
 
-  if (map.zoom >= 5)
-  {
-    if (!gotIssues)
-    {
+  if (map.zoom >= 5) {
+    if (!gotIssues) {
       $.ajax({
         url: "api/waypoints/issues",
         dataType: 'json',
@@ -117,17 +107,13 @@ function handleMoveend()
       gotIssues = true;
     }
     issuesLayer.setVisibility(true);
-  }
-  else
-  {
+  } else {
     //hide issues layer
     issuesLayer.setVisibility(false);
   }
 
-  if (map.zoom >= 4)
-  {
-    if (!gotWatersources)
-    {
+  if (map.zoom >= 4) {
+    if (!gotWatersources) {
       $.ajax({
         url: "api/waypoints/watersources",
         dataType: 'json',
@@ -136,49 +122,38 @@ function handleMoveend()
       gotWatersources = true;
     }
     watersourcesLayer.setVisibility(true);
-  }
-  else
-  {
+  } else {
       //hide watersources layer
       watersourcesLayer.setVisibility(false);
   }
 }
 
-function replaceRoute(points, alreadyComplete)
-{
+function replaceRoute(points, alreadyComplete) {
   //kill the existing route (removeFeatures()?)
 
   var lineString = new OpenLayers.Geometry.LineString(points);
 
   var mapProj = map.getProjectionObject();
-  //console.log("getGeodesicLength: " + lineString.getGeodesicLength(mapProj));
   var dist = lineString.getGeodesicLength(mapProj) / 1000;
-  if (true == alreadyComplete)
-  {
+  if (true == alreadyComplete) {
     $("#routeLenCompl").text(dist.toFixed(1));
-  }
-  else
-  {
+  } else {
     $("#routeLenToDo").text(dist.toFixed(1));
   }
 
   var line_style = {strokeColor: "#AA0099", strokeOpacity: 1, strokeWidth: 3};
-  if (true == alreadyComplete)
-  {
+  if (true == alreadyComplete) {
     line_style = {strokeColor: "#33DD44", strokeOpacity: 1, strokeWidth: 3};
   }
   var lineFeature = new OpenLayers.Feature.Vector(lineString, null, line_style);
   defaultVectorLayer.addFeatures([lineFeature]);
 }
 
-function addMarker(e, n, txt)
-{
-  for (m = 0; m < markerList.length; m++)
-  {
+function addMarker(e, n, txt) {
+  for (m = 0; m < markerList.length; m++) {
     var cm = markerList[m];
 
-    if ((cm.lonlat.lon == e) && (cm.lonlat.lat == n))
-    {
+    if ((cm.lonlat.lon == e) && (cm.lonlat.lat == n)) {
       markerList.splice(m, 1);
       m --;
       map.removeMarker(cm);
@@ -192,14 +167,11 @@ function addMarker(e, n, txt)
 
 
 
-function markersCallback(data)
-{
+function markersCallback(data) {
   var points = [];
-  for (p in data)
-  {
+  for (p in data) {
     if ((!isNaN(data[p].E) && !isNaN(data[p].N))
-        && (currentPos.E != data[p].E && currentPos.N != data[p].N))
-    {
+        && (currentPos.E != data[p].E && currentPos.N != data[p].N)) {
       var popupBoxNote =
         (data[p].distSoFar / 1000).toFixed(1) + ' km from Dunnet Head<br>' +
         (data[p].distRemaining / 1000).toFixed(1) + ' km to Leathercote Point<br>' +
@@ -211,13 +183,10 @@ function markersCallback(data)
   }
 }
 
-function issuesCallback(data)
-{
+function issuesCallback(data) {
   var points = [];
-  for (p in data)
-  {
-    if (!isNaN(data[p].E) && !isNaN(data[p].N))
-    {
+  for (p in data) {
+    if (!isNaN(data[p].E) && !isNaN(data[p].N)) {
       var txt = getPopupBoxText(data[p].E, data[p].N,
         data[p].Place, data[p].Issue);
       var pos = new OpenSpace.MapPoint(data[p].E, data[p].N);
@@ -228,13 +197,10 @@ function issuesCallback(data)
   }
 }
 
-function watersourcesCallback(data)
-{
+function watersourcesCallback(data) {
   var points = [];
-  for (p in data)
-  {
-    if (!isNaN(data[p].E) && !isNaN(data[p].N))
-    {
+  for (p in data) {
+    if (!isNaN(data[p].E) && !isNaN(data[p].N)) {
       var txt = getPopupBoxText(data[p].E, data[p].N,
         data[p].Place, data[p].Source);
       var pos = new OpenSpace.MapPoint(data[p].E, data[p].N);
@@ -245,13 +211,10 @@ function watersourcesCallback(data)
   }
 }
 
-function recvCoordsDataCallback(data, alreadyComplete)
-{
+function recvCoordsDataCallback(data, alreadyComplete) {
   var points = [];
-  for (p in data)
-  {
-    if (!isNaN(data[p].E) && !isNaN(data[p].N))
-    {
+  for (p in data) {
+    if (!isNaN(data[p].E) && !isNaN(data[p].N)) {
       var pt = new OpenLayers.Geometry.Point(data[p].E, data[p].N);
       points.push(pt);
     }
@@ -260,30 +223,22 @@ function recvCoordsDataCallback(data, alreadyComplete)
   replaceRoute(points, alreadyComplete);
 }
 
-function recvCoordsDataCallbackCompl(data)
-{
+function recvCoordsDataCallbackCompl(data) {
   recvCoordsDataCallback(data, true);
 }
 
-function recvCoordsDataCallbackToDo(data)
-{
+function recvCoordsDataCallbackToDo(data) {
   recvCoordsDataCallback(data, false);
 }
 
-function resizeElementHeight(element)
-{
+function resizeElementHeight(element) {
   var height = 0;
   var body = window.document.body;
-  if (window.innerHeight)
-  {
+  if (window.innerHeight) {
     height = window.innerHeight;
-  }
-    else if (body.parentElement.clientHeight)
-  {
+  } else if (body.parentElement.clientHeight) {
     height = body.parentElement.clientHeight;
-  }
-  else if (body && body.clientHeight)
-  {
+  } else if (body && body.clientHeight) {
     height = body.clientHeight;
   }
   element.style.height = ((height - element.offsetTop) + "px");
@@ -291,10 +246,8 @@ function resizeElementHeight(element)
 
 var currentPos = {"E":0,"N":0};
 
-function doneuptoCallback(data)
-{
-  if (isNaN(data.E) || isNaN(data.N))
-  {
+function doneuptoCallback(data) {
+  if (isNaN(data.E) || isNaN(data.N)) {
     return;
   }
   currentPos = data;
@@ -316,8 +269,7 @@ function doneuptoCallback(data)
 var routeStartPos;
 var routeFinishPos;
 
-function majorMarkersCallback(data)
-{
+function majorMarkersCallback(data) {
   var points = [];
 
   var size = new OpenLayers.Size(32, 32);
@@ -329,17 +281,17 @@ function majorMarkersCallback(data)
 
   routeStartPos = data[0];
   routeFinishPos = data[1];
-  if (!isNaN(routeStartPos.E) && !isNaN(routeStartPos.N))
-  {
+  if (!isNaN(routeStartPos.E) && !isNaN(routeStartPos.N)) {
     var txt = getPopupBoxText(routeStartPos.E, routeStartPos.N,
                 routeStartPos.Name, null, "<u>Start</u>: ");
     var posStart = new OpenSpace.MapPoint(routeStartPos.E,routeStartPos.N);
     var mStart = map.createMarker(posStart, yellowIcon, txt);
+
+    console.log(defaultMarkerLayer)
     defaultMarkerLayer.removeMarker(mStart);
     majorMarkers.addMarker(mStart);
   }
-  if (!isNaN(routeFinishPos.E) && !isNaN(routeFinishPos.N))
-  {
+  if (!isNaN(routeFinishPos.E) && !isNaN(routeFinishPos.N)) {
     var txt = getPopupBoxText(routeFinishPos.E, routeFinishPos.N,
                  routeFinishPos.Name, null, "<u>Finish</u>: ");
     var posFinish = new OpenSpace.MapPoint(routeFinishPos.E,routeFinishPos.N);
@@ -355,8 +307,7 @@ function majorMarkersCallback(data)
   });
 }
 
-var addMajorMarkers = function()
-{
+var addMajorMarkers = function() {
   $.ajax({
     url: "api/waypoints/majormarkers",
     dataType: 'json',
@@ -364,8 +315,7 @@ var addMajorMarkers = function()
   });
 }
 
-var loadRoute = function()
-{
+var loadRoute = function() {
   $.ajax({
     url: "api/waypoints/done",
     dataType: 'json',
@@ -379,8 +329,7 @@ var loadRoute = function()
   });
 }
 
-var setupLayers = function()
-{
+var setupLayers = function() {
   defaultMarkerLayer = map.getMarkerLayer();
   defaultVectorLayer = map.getVectorLayer();
   defaultVectorLayer.setZIndex(100);
@@ -393,9 +342,7 @@ var setupLayers = function()
   map.addLayer(issuesLayer);
 }
 
-var initMap = function()
-{
-  //initialise globals - map, defaultMarkerLayer, defaultVectorLayer
+var initMap = function() {
   map = new OpenSpace.Map("mapdiv");
       setupLayers();
   map.setCenter(new OpenSpace.MapPoint(362000, 600000), zoom);
@@ -408,8 +355,7 @@ var initMap = function()
   map.events.register("moveend", map, handleMoveend );
 }
 
-var start = function()
-{
+var start = function() {
   resizeElementHeight($("#mapdiv")[0]);
   initMap();
   loadRoute();
