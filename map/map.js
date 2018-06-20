@@ -239,7 +239,7 @@ function resizeElementHeight(element) {
   } else if (body && body.clientHeight) {
     height = body.clientHeight;
   }
-  element.style.height = ((height - element.offsetTop) + "px");
+  element.style.height = ((height - $(element).offset().top) + "px");
 }
 
 var currentPos = {"E":0,"N":0};
