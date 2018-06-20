@@ -176,8 +176,8 @@
           <p class="sidedescr">Starting at Dunnet Head, where the Atlantic Ocean meets the North Sea on the north coast of Scotland</p>
           <p class="sidedescr">Finishing at Leathercote Point, where the Channel meets the North Sea at the south-east corner of England</p>
           <p class="sidedescr">Following the line of the watershed, being the drainage divide between the waters flowing towards the Atlantic Ocean (and its arms the Irish Sea and the Channel) and the waters flowing towards the North Sea</p>
-          <div class=todocompl>To do: <span class="routeLenToDo"></span> km</div>
           <div class=todocompl>Done: <span class="routeLenCompl"></span> km</div>
+          <div class=todocompl>To do: <span class="routeLenToDo"></span> km</div>
         </div>
       </div>
     </div>
@@ -195,8 +195,8 @@
           <p class="sidedescr">Starting at Dunnet Head, where the Atlantic Ocean meets the North Sea on the north coast of Scotland</p>
           <p class="sidedescr">Finishing at Leathercote Point, where the Channel meets the North Sea at the south-east corner of England</p>
           <p class="sidedescr">Following the line of the watershed, being the drainage divide between the waters flowing towards the Atlantic Ocean (and its arms the Irish Sea and the Channel) and the waters flowing towards the North Sea</p>
-          <div class=todocompl>To do: <span class="routeLenToDo"></span> km</div>
           <div class=todocompl>Done: <span class="routeLenCompl"></span> km</div>
+          <div class=todocompl>To do: <span class="routeLenToDo"></span> km</div>
         </div>
       </div>
     </div>
