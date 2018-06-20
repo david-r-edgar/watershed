@@ -44,8 +44,6 @@ function getPopupBoxText(posE, posN, heading1, description, prefix) {
   var osGR = new OsGridRef(posE, posN);
   var osLL = OsGridRef.osGridToLatLong(osGR);
 
-  console.log('osGR', osGR)
-
   var wgs84LL = CoordTransform.convertOSGB36toWGS84(osLL);
   var geohackUrl = "http://toolserver.org/~geohack/geohack.php?pagename="
               + heading1 + "&params=" + wgs84LL._lat + "_N_"
@@ -241,7 +239,7 @@ function resizeElementHeight(element) {
   } else if (body && body.clientHeight) {
     height = body.clientHeight;
   }
-  element.style.height = ((height - element.offsetTop) + "px");
+  element.style.height = ((height - $(element).offset().top) + "px");
 }
 
 var currentPos = {"E":0,"N":0};
@@ -287,7 +285,6 @@ function majorMarkersCallback(data) {
     var posStart = new OpenSpace.MapPoint(routeStartPos.E,routeStartPos.N);
     var mStart = map.createMarker(posStart, yellowIcon, txt);
 
-    console.log(defaultMarkerLayer)
     defaultMarkerLayer.removeMarker(mStart);
     majorMarkers.addMarker(mStart);
   }
