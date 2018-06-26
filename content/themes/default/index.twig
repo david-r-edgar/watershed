@@ -19,6 +19,18 @@
 <body>
 
     <header id="header">
+
+    	<div id="watershedHeader">
+    		<nav style="padding: 0px 20px;">
+    		  <ul>
+    			<li><a href="../map">Map</a></li>
+    			<li><a href="doku.php?id=diary">Diary</a></li>
+    			<li><a href="doku.php?id=about">About</a></li>
+    		  </ul>
+    		</nav>
+    	</div>
+
+<!--
         <div class="inner clearfix">
             <h1><a href="{{ "index"|link }}" id="logo">{{ site_title }}</a></h1>
             <nav>
@@ -31,6 +43,7 @@
                 </ul>
             </nav>
         </div>
+-->
     </header>
 
     <section id="content">
@@ -41,14 +54,7 @@
 
     <footer id="footer">
         <div class="inner">
-            <div class="social">
-                {% for social in meta.social %}
-                    <a href="{{ social.url }}" title="{{ social.title }}"><span class="icon-{{ social.icon }}"></span></a>
-                {% endfor %}
-            </div>
-            <a href="http://picocms.org/">Pico</a> was made by <a href="http://gilbert.pellegrom.me">Gilbert Pellegrom</a>
-            and is maintained by <a href="https://github.com/picocms/Pico/graphs/contributors">The Pico Community</a>.
-            Released under the <a href="https://github.com/picocms/Pico/blob/master/LICENSE.md">MIT license</a>.
+            Copyright &copy; 2013-2018 David R Edgar
         </div>
     </footer>
 
