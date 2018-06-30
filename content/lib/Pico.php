@@ -1016,9 +1016,11 @@ class Pico
                 'raw_content' => &$rawContent,
                 'meta' => &$meta
             );
-
             if ($file === $this->requestFile) {
                 $page['content'] = &$this->content;
+            } else {
+                $preparedContent = $this->prepareFileContent($rawContent, $meta);
+                $page['content'] = $this->parseFileContent($preparedContent);
             }
 
             unset($rawContent, $meta);
