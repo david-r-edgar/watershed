@@ -23,45 +23,22 @@
     	<div id="watershedHeader">
     		<nav style="padding: 0px 20px;">
     		  <ul>
-    			<li><a href="../map">Map</a></li>
-    			<li><a href="diary">Diary</a></li>
-    			<li><a href="about">About</a></li>
+    			<li><a href="../../map">Map</a></li>
+    			<li><a href="../diary">Diary</a></li>
+    			<li><a href="../about">About</a></li>
     		  </ul>
     		</nav>
     	</div>
 
-<!--
-        <div class="inner clearfix">
-            <h1><a href="{{ "index"|link }}" id="logo">{{ site_title }}</a></h1>
-            <nav>
-                <ul>
-                    {% for page in pages if page.title %}
-                        <li{% if page.id == current_page.id %} class="active"{% endif %}>
-                            <a href="{{ page.url }}">{{ page.title }}</a>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </nav>
-        </div>
--->
     </header>
 
     <section id="content">
         <div class="inner">
             {{ content }}
-
-            {% if current_page.id == "diary" %}
-              {% for page in pages|sort_by("url") %}
-                  {% if page.id starts with "trip/" %}
-                      <div class="post">
-                          <h3><a href="{{ page.url }}">{{ page.title }}</a></h3>
-                          <div class="excerpt">{{ page.description }}</div>
-                      </div>
-                  {% endif %}
-              {% endfor %}
-            {% endif %}
         </div>
     </section>
+
+
 
     <footer id="footer">
         <div class="inner">
