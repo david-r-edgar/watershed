@@ -44,7 +44,7 @@ final class Pico_Edit extends AbstractPicoPlugin {
 
       if( !isset($_SESSION['backend_logged_in'] ) || !$_SESSION['backend_logged_in'] ) {
         if( isset($_POST['password'] ) ) {
-          if( hash('sha256', $_POST['password'] ) == $this->password ) {
+          if( strtoupper(hash('sha256', $_POST['password'])) == $this->password ) {
             $_SESSION['backend_logged_in'] = true;
             $_SESSION['backend_config'] = $twig_vars['config'];
           }
@@ -219,8 +219,22 @@ final class Pico_Edit extends AbstractPicoPlugin {
 
     $error = '';
     // if( is_null( $content ) ) {
-    $content = "/*\nTitle: $name\nAuthor: " . ( $this->getConfig( 'pico_edit_default_author' ) ? $this->getConfig( 'pico_edit_default_author' ) : '' ) . "\nDate: ". date('j F Y') . "\n*/\n\n";
+    //$content = "/*\nTitle: $name\nAuthor: " . ( $this->getConfig( 'pico_edit_default_author' ) ? $this->getConfig( 'pico_edit_default_author' ) : '' ) . "\nDate: ". date('j F Y') . "\n*/\n\n";
     // }
+
+
+    try
+    {
+      $titleParsedAsDate = new DateTime($name);
+      $formattedDateTitle = $titleParsedAsDate->format('jS F Y');
+      $formattedDateTags = $titleParsedAsDate->format('Y-m');
+      $formattedDateDate = $titleParsedAsDate->format('Y-m-d');
+      $content = "/*\nTitle: $formattedDateTitle\nTags: $formattedDateTags\nDate: ". $formattedDateDate . "\nTemplate: day\n*/\n\n# " . $formattedDateTitle . "\n\n";
+    }
+    catch(Exception $err)
+    {
+      $content = "/*\nTitle: $name\nDate: ". date('j F Y') . "\n*/\n\n";
+    }
 
     if( file_exists( $path ) ) $error = 'Error: A post already exists with this title';
     else
