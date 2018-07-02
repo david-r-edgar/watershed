@@ -3,6 +3,12 @@
 <head>
     <meta charset="utf-8" />
 
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <link rel="shortcut icon" href="http://www.loughrigg.org/watershed/watershed.ico" />
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
     <title>{% if meta.title %}{{ meta.title }} | {% endif %}{{ site_title }}</title>
     {% if meta.description %}
         <meta name="description" content="{{ meta.description|striptags }}">
@@ -18,8 +24,6 @@
 </head>
 <body class="trip">
 
-    <header id="header">
-
     	<div id="watershedHeader">
     		<nav style="padding: 0px 20px;">
     		  <ul>
@@ -30,8 +34,6 @@
     		</nav>
     	</div>
 
-    </header>
-
     <section id="content">
         <div class="inner">
             {{ content }}
@@ -40,12 +42,25 @@
               {% for page in pages|sort_by("time") %}
                   {% if page.id starts with "day/" %}
                       <div class="post">
-                          <h3><a href="{{ page.url }}">&#xe804;</a></h3>
-                          <div class="excerpt">{{ page.content }}</div>
+                        {#  <h3><a href="{{ page.url }}">&#xe804;</a></h3> #}
+                          <div class="excerpt">{{ page.content_for_inclusion }}</div>
                       </div>
                   {% endif %}
               {% endfor %}
             {% endif %}
+
+            <div class="tripNavLinks">
+              {% if prev_page.id starts with "trip/" %}
+                <span class="prevTrip">
+                  <a href="{{ prev_page.url }}"><span class="navArrow">←</span> {{ prev_page.title }}</a>
+                </span>
+              {% endif %}
+              {% if next_page.id starts with "trip/" %}
+                <span class="nextTrip">
+                  <a href="{{ next_page.url }}">{{ next_page.title }} <span class="navArrow">→</span></a>
+                </span>
+              {% endif %}
+            </div>
         </div>
     </section>
 
@@ -54,6 +69,8 @@
             Copyright &copy; 2013-2018 David R Edgar
         </div>
     </footer>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
 </body>
 </html>

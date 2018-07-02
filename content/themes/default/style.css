@@ -20,8 +20,8 @@ table, caption, tbody, tfoot, thead, tr, th, td {
     outline: 0;
     font-weight: inherit;
     font-style: inherit;
-    font-size: 100%;
-    font-family: inherit;
+    font-size: 98%;
+    font-family: sans-serif;
     vertical-align: baseline;
 }
 
@@ -101,7 +101,7 @@ html { height: 100%; }
 body {
     /*font: 14px/1.8em 'Open Sans', Helvetica, Arial, Helvetica, sans-serif;*/
     font-family: Verdana, Geneva, "sans-serif";
-    color: #444;
+    color: #555;
     background: #fff;
     -webkit-font-smoothing: antialiased;
     display: flex;
@@ -110,7 +110,7 @@ body {
 }
 
 a, a:visited {
-    color: #2EAE9B;
+    color: #90b800;
     text-decoration: none;
     -webkit-transition: all 0.2s linear;
     -moz-transition: all 0.2s linear;
@@ -119,28 +119,34 @@ a, a:visited {
     transition: all 0.2s linear;
 }
 
+
 a:hover, a:active {
-    color: #000;
+    color: #304020;
     text-decoration: none;
 }
 
 h1, h2, h3, h4, h5, h6 {
-    color: #000;
+    color: #444;
     line-height: 1.2em;
     margin-bottom: 0.6em;
 }
 
 h1 {
     font-size: 2em;
+    margin-top: 2em;
+}
+h1:first-of-type {
+  margin-top: 1em;
 }
 
 h2 {
     font-size: 1.7em;
+    margin-top: 1.5em;
 }
 
 h3 {
     font-size: 1.5em;
-    margin-top: 2em;
+    margin-top: 1em;
 }
 
 p, table, ol, ul, pre, blockquote, dl {
@@ -328,7 +334,26 @@ dd {
   color: white;
 }
 
+.post {
+  margin-left: 20px;
+}
+.post h1 {
+  font-size: 1.7em;
+}
 
+.tripNavLinks {
+  margin: 30px 20px;
+}
+.tripNavLinks .prevTrip {
+  float: left;
+}
+.tripNavLinks .nextTrip {
+  float: right;
+}
+.tripNavLinks .navArrow {
+  font-size: 1.6em;
+  font-weight: 800;
+}
 
 /* Media Queries
 /*---------------------------------------------*/
@@ -369,5 +394,8 @@ dd {
     #footer {
         margin-top: 40px;
         padding: 30px 0;
+    }
+    .post {
+        margin-left: 0px;
     }
 }

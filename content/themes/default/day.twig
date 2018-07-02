@@ -3,6 +3,12 @@
 <head>
     <meta charset="utf-8" />
 
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <link rel="shortcut icon" href="http://www.loughrigg.org/watershed/watershed.ico" />
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
     <title>{% if meta.title %}{{ meta.title }} | {% endif %}{{ site_title }}</title>
     {% if meta.description %}
         <meta name="description" content="{{ meta.description|striptags }}">
@@ -18,8 +24,6 @@
 </head>
 <body>
 
-    <header id="header">
-
     	<div id="watershedHeader">
     		<nav style="padding: 0px 20px;">
     		  <ul>
@@ -29,8 +33,6 @@
     		  </ul>
     		</nav>
     	</div>
-
-    </header>
 
     <section id="content">
         <div class="inner">
@@ -45,6 +47,8 @@
             Copyright &copy; 2013-2018 David R Edgar
         </div>
     </footer>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
 </body>
 </html>
