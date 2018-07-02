@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+    <meta charset="utf-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <link rel="shortcut icon" href="http://www.loughrigg.org/watershed/watershed.ico" />
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <title>{% if meta.title %}{{ meta.title }} | {% endif %}{{ site_title }}</title>
+    {% if meta.description %}
+        <meta name="description" content="{{ meta.description|striptags }}">
+    {% endif %}{% if meta.robots %}
+        <meta name="robots" content="{{ meta.robots }}">
+    {% endif %}
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,700" type="text/css" />
+    <link rel="stylesheet" href="{{ theme_url }}/style.css" type="text/css" />
+    <link rel="stylesheet" href="{{ theme_url }}/fontello.css" type="text/css" />
+
+    <script src="{{ theme_url }}/scripts/modernizr-2.6.1.min.js"></script>
+</head>
+<body>
+
+    <!--<header id="header">-->
+
+    	<div id="watershedHeader">
+    		<nav style="padding: 0px 20px;">
+    		  <ul>
+    			<li><a href="../map">Map</a></li>
+    			<li><a href="diary">Diary</a></li>
+    			<li><a href="about">About</a></li>
+    		  </ul>
+    		</nav>
+    	</div>
+
+<!--
+        <div class="inner clearfix">
+            <h1><a href="{{ "index"|link }}" id="logo">{{ site_title }}</a></h1>
+            <nav>
+                <ul>
+                    {% for page in pages if page.title %}
+                        <li{% if page.id == current_page.id %} class="active"{% endif %}>
+                            <a href="{{ page.url }}">{{ page.title }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </nav>
+        </div>
+-->
+    <!--</header>-->
+
+    <section id="content">
+        <div class="inner">
+
+            {% if current_page.id == "diary" %}
+              <h1>Diary</h1>
+            {% endif %}
+
+            {{ content }}
+
+            {% if current_page.id == "diary" %}
+              {% for page in pages|sort_by("url") %}
+                  {% if page.id starts with "trip/" %}
+                      <div class="post">
+                          <h2><a href="{{ page.url }}">{{ page.title }}</a></h2>
+                          <div class="excerpt">{{ page.description }}</div>
+                      </div>
+                  {% endif %}
+              {% endfor %}
+            {% endif %}
+        </div>
+    </section>
+
+    <footer id="footer">
+        <div class="inner">
+            Copyright &copy; 2013-2018 David R Edgar
+        </div>
+    </footer>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+</body>
+</html>
