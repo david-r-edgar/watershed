@@ -99,7 +99,7 @@
 
   .awwTitle
 	{
-		color: #248;
+		color: #444;
 		font-family: "Trebuchet MS",Helvetica,sans-serif;
 	}
 
@@ -129,12 +129,18 @@
     position: fixed;
     z-index: 900;
     right: 14px;
-    top: 20px;
+    bottom: 40px;
     background-color: #809655;
     border-radius: 100%;
   }
   #infoModalButton button {
     color: white;
+  }
+  #infoModalButton button:hover {
+    font-weight: 800;
+    background-color: #708645;
+    border-radius: 100%;
+    text-decoration: none;
   }
 
   @media screen and (max-width: 767px) {
