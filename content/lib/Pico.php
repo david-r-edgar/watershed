@@ -1021,6 +1021,7 @@ class Pico
             } else {
                 $preparedContent = $this->prepareFileContent($rawContent, $meta);
                 $page['content'] = $this->parseFileContent($preparedContent);
+                $page['content_for_inclusion'] = $this->parseFileContent($preparedContent);
             }
 
             unset($rawContent, $meta);
