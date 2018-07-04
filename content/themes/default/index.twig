@@ -20,6 +20,8 @@
     <link rel="stylesheet" href="{{ theme_url }}/style.css" type="text/css" />
     <link rel="stylesheet" href="{{ theme_url }}/fontello.css" type="text/css" />
 
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
     <script src="{{ theme_url }}/scripts/modernizr-2.6.1.min.js"></script>
 </head>
 <body>
@@ -36,20 +38,6 @@
     		</nav>
     	</div>
 
-<!--
-        <div class="inner clearfix">
-            <h1><a href="{{ "index"|link }}" id="logo">{{ site_title }}</a></h1>
-            <nav>
-                <ul>
-                    {% for page in pages if page.title %}
-                        <li{% if page.id == current_page.id %} class="active"{% endif %}>
-                            <a href="{{ page.url }}">{{ page.title }}</a>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </nav>
-        </div>
--->
     <!--</header>-->
 
     <section id="content">
