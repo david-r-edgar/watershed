@@ -17,11 +17,10 @@ final class Pico_Edit extends AbstractPicoPlugin {
   private $is_logout = false;
   private $plugin_path = '';
   private $password = '';
-  private $url = 'pico_edit';
 
   public function onPageRendering(Twig_Environment &$twig, array &$twig_vars, &$templateName)
   {
-    $twig_vars['pico_edit_url'] = $this->getPageUrl( $this->url );
+    $twig_vars['pico_edit_url'] = $this->getPageUrl( 'pico_edit' );
     if( $this->is_logout ) {
       session_destroy();
       header( 'Location: '. $twig_vars['pico_edit_url'] );
@@ -44,7 +43,7 @@ final class Pico_Edit extends AbstractPicoPlugin {
 
       if( !isset($_SESSION['backend_logged_in'] ) || !$_SESSION['backend_logged_in'] ) {
         if( isset($_POST['password'] ) ) {
-          if( hash('sha256', $_POST['password'] ) == $this->password ) {
+          if( sha1($_POST['password'] ) == $this->password ) {
             $_SESSION['backend_logged_in'] = true;
             $_SESSION['backend_config'] = $twig_vars['config'];
           }
@@ -107,12 +106,8 @@ final class Pico_Edit extends AbstractPicoPlugin {
     $this->plugin_path = dirname( __FILE__ );
     if( file_exists( $this->plugin_path .'/config.php' ) ) {
       global $backend_password;
-      global $backend_url;
       include_once( $this->plugin_path .'/config.php' );
       $this->password = $backend_password;
-      if (isset($backend_url)) {
-        $this->url = $backend_url;
-      }
     }
     $page_404 = $this->getConfig('content_dir') . '/404.md';
     if( !file_exists( $page_404 ) ) touch( $page_404 );
@@ -123,7 +118,7 @@ final class Pico_Edit extends AbstractPicoPlugin {
 
   public function onRequestUrl( &$url ) {
     // If the request is anything to do with pico_edit, then we start the PHP session
-    if( substr( $url, 0, strlen($this->url) ) == $this->url ) {
+    if( substr( $url, 0, 9 ) == 'pico_edit' ) {
       if(function_exists('session_status')) {
         if (session_status() == PHP_SESSION_NONE) {
           session_start();
@@ -133,16 +128,13 @@ final class Pico_Edit extends AbstractPicoPlugin {
       }
     }
     // Are we looking for /pico_edit?
-    if( $url == $this->url ) $this->is_admin = true;
-    if( $url == $this->url.'/new' ) $this->do_new();
-    if( $url == $this->url.'/open' ) $this->do_open();
-    if( $url == $this->url.'/save' ) $this->do_save();
-    if( $url == $this->url.'/delete' ) $this->do_delete();
-    if( $url == $this->url.'/logout' ) $this->is_logout = true;
-    if( $url == $this->url.'/commit' ) $this->do_commit();
-    if( $url == $this->url.'/git' ) $this->do_git();
-    if( $url == $this->url.'/pushpull' ) $this->do_pushpull();
-    if( $url == $this->url.'/clearcache' ) $this->do_clearcache();
+    if( $url == 'pico_edit' ) $this->is_admin = true;
+    if( $url == 'pico_edit/new' ) $this->do_new();
+    if( $url == 'pico_edit/open' ) $this->do_open();
+    if( $url == 'pico_edit/save' ) $this->do_save();
+    if( $url == 'pico_edit/delete' ) $this->do_delete();
+    if( $url == 'pico_edit/logout' ) $this->is_logout = true;
+    if( $url == 'pico_edit/clearcache' ) $this->do_clearcache();
   }
 
   /**
@@ -219,22 +211,8 @@ final class Pico_Edit extends AbstractPicoPlugin {
 
     $error = '';
     // if( is_null( $content ) ) {
-    //$content = "/*\nTitle: $name\nAuthor: " . ( $this->getConfig( 'pico_edit_default_author' ) ? $this->getConfig( 'pico_edit_default_author' ) : '' ) . "\nDate: ". date('j F Y') . "\n*/\n\n";
+    $content = "/*\nTitle: $name\nAuthor: " . ( $this->getConfig( 'pico_edit_default_author' ) ? $this->getConfig( 'pico_edit_default_author' ) : '' ) . "\nDate: ". date('j F Y') . "\n*/\n\n";
     // }
-
-
-    try
-    {
-      $titleParsedAsDate = new DateTime($name);
-      $formattedDateTitle = $titleParsedAsDate->format('jS F Y');
-      $formattedDateTags = $titleParsedAsDate->format('Y-m');
-      $formattedDateDate = $titleParsedAsDate->format('Y-m-d');
-      $content = "/*\nTitle: $formattedDateTitle\nTags: $formattedDateTags\nDate: ". $formattedDateDate . "\nTemplate: day\n*/\n\n# " . $formattedDateTitle . "\n\n";
-    }
-    catch(Exception $err)
-    {
-      $content = "/*\nTitle: $name\nDate: ". date('j F Y') . "\n*/\n\n";
-    }
 
     if( file_exists( $path ) ) $error = 'Error: A post already exists with this title';
     else
@@ -314,232 +292,6 @@ final class Pico_Edit extends AbstractPicoPlugin {
       }
       die( $ret );
     }
-  }
-
-  private function do_commit()
-  {
-    if(!isset($_SESSION['backend_logged_in']) || !$_SESSION['backend_logged_in']) die(json_encode(array('error' => 'Error: Unathorized')));
-    if($_SERVER['REQUEST_METHOD'] == 'POST') {
-      return $this->do_commit_post();
-    }
-    return $this->do_commit_get();
-  }
-
-  private function do_commit_get()
-  {
-    if(file_exists('./plugins/pico_edit/commitform.html')) {
-      # Do the git stuff...
-      require_once 'Git-php-lib';
-      $repo = Git::open('.');
-      $status = '';
-      try {
-        $status = $repo->porcelain();
-      }
-      catch(Exception $e) {
-        $status = array('Failed to run git-status: ' . $e->getMessage());
-      }
-
-      $loader = new Twig_Loader_Filesystem('./plugins/pico_edit');
-      $twig = new Twig_Environment($loader, array('cache' => null));
-      $twig->addExtension(new Twig_Extension_Debug());
-      $twig_vars = array(
-        'status' => $status,
-      );
-      $content = $twig->render('commitform.html', $twig_vars);
-      die($content);
-    } else {
-      die('Sorry, commitform.html was not found in the backend plugin. This is an installation problem.');
-    }
-  }
-
-  private function do_commit_post()
-  {
-    // $_REQUEST['file'] is an array of file names. We don't trust our client,
-    // so will re-run 'porcelain' to get a list of files. We'll only 'git add'
-    // any files supplied by the user that are in the list we get from porcelain
-    // we'll then go ahead and commit them with the message supplied
-    require_once 'Git-php-lib';
-    $repo = Git::open('.');
-    $status = $repo->porcelain();
-    $git_files = array();
-    foreach($status as $item) {
-      $git_files[$item['file']] = $item['y'];
-    }
-
-    $to_add = array();
-    $to_rm = array();
-    foreach($_REQUEST['file'] as $requested_file) {
-      if(array_key_exists($requested_file, $git_files)) {
-        if($git_files[$requested_file] == 'D') {
-          $to_rm[] = $requested_file;
-        } else {
-          $to_add[] = $requested_file;
-        }
-      }
-    }
-
-    $add_output = '';
-    if(count($to_add) > 0) {
-      try {
-        $add_output = $repo->add($to_add);
-      }
-      catch(Exception $e) {
-        $add_output = 'Failed to run git-add: ' . $e->getMessage();
-      }
-    }
-    #$add_output = preg_replace('/\r?\n\r?/', "<br>\n", $add_output);
-    if(count($to_rm) > 0) {
-      $rm_output = '';
-      try {
-        $rm_output = $repo->rm($to_rm);
-      }
-      catch(Exception $e) {
-        $rm_output = 'Failed to run git-rm: ' . $e->getMessage();
-      }
-    }
-
-    $commit_output = '';
-    try {
-      $commit_output = $repo->commit($_REQUEST['message'], false);
-    }
-    catch(Exception $e) {
-      $commit_output = 'Failed to run git-commit: ' . $e->getMessage();
-    }
-    #$commit_output = preg_replace('/\r?\n\r?/', "<br>\n", $add_output);
-
-    if(file_exists('./plugins/pico_edit/commitresponse.html')) {
-      $loader = new Twig_Loader_Filesystem('./plugins/pico_edit');
-      $twig = new Twig_Environment($loader, array('cache' => null));
-      $twig->addExtension(new Twig_Extension_Debug());
-      $twig_vars = array(
-        'add' => $add_output,
-        'rm' => $rm_output,
-        'commit' => $commit_output,
-      );
-      $content = $twig->render('commitresponse.html', $twig_vars);
-      die($content);
-    } else {
-      die('Sorry, commitresponse.html was not found in the backend plugin. This is an installation problem.');
-    }
-  }
-
-  private function do_pushpull()
-  {
-    if(!isset($_SESSION['backend_logged_in']) || !$_SESSION['backend_logged_in']) die(json_encode(array('error' => 'Error: Unathorized')));
-    if($_SERVER['REQUEST_METHOD'] == 'POST') {
-      return $this->do_pushpull_post();
-    }
-    return $this->do_pushpull_get();
-  }
-
-  private function do_pushpull_get()
-  {
-    if(file_exists('./plugins/pico_edit/pushpullform.html')) {
-      # Do the git stuff...
-      require_once 'Git-php-lib';
-      $repo = Git::open('.');
-      $remotes = '';
-      try {
-        $remotes_string = $repo->run('remote');
-        $remotes = preg_split('/\s*\r?\n\r?\s*/', $remotes_string, 0, PREG_SPLIT_NO_EMPTY);
-      }
-      catch(Exception $e) {
-        $remotes = array('Failed to get git sources: ' . $e->getMessage());
-      }
-
-      $loader = new Twig_Loader_Filesystem('./plugins/pico_edit');
-      $twig = new Twig_Environment($loader, array('cache' => null));
-      $twig->addExtension(new Twig_Extension_Debug());
-      $twig_vars = array(
-        'remotes' => $remotes,
-      );
-      $content = $twig->render('pushpullform.html', $twig_vars);
-      die($content);
-    } else {
-      die('Sorry, pushpullform.html was not found in the backend plugin. This is an installation problem.');
-    }
-  }
-
-  private function do_pushpull_post()
-  {
-    if(file_exists('./plugins/pico_edit/pushpullresponse.html')) {
-      # Do the git stuff...
-      require_once 'Git-php-lib';
-      $repo = Git::open('.');
-      $remotes = array();
-      try {
-        $remotes_string = $repo->run('remote');
-        $remotes = preg_split('/\s*\r?\n\r?\s*/', $remotes_string, 0, PREG_SPLIT_NO_EMPTY);
-      }
-      catch(Exception $e) {
-        $status = array('Failed to get git sources: ' . $e->getMessage());
-      }
-
-      $output = 'xyz';
-
-      # Now make the the selected repo is one in the remotes list
-      if(in_array($_REQUEST['remote'], $remotes)) {
-        # Selected repo is acceptable, so go Git push/pull
-
-        try {
-          if($_REQUEST['operation'] == 'push') {
-            $output = $repo->push($_REQUEST['remote'], 'master');
-            error_log("output = $output");
-          } elseif($_REQUEST['operation'] == 'pull') {
-            $output = $repo->pull($_REQUEST['remote'], 'master');
-          } else {
-            $output = 'Sorry, that operation is not allowed';
-          }
-        }
-        catch(Exception $e) {
-          $output = $e->getMessage();
-        }
-      } else {
-        # Not an acceptable remote
-        $output = 'Sorry, that remote is not allowed';
-      }
-
-      # And do output...
-      $loader = new Twig_Loader_Filesystem('./plugins/pico_edit');
-      $twig = new Twig_Environment($loader, array('cache' => null));
-      $twig->addExtension(new Twig_Extension_Debug());
-      $twig_vars = array(
-        'output' => $output,
-      );
-      $content = $twig->render('pushpullresponse.html', $twig_vars);
-      die($content);
-    } else {
-      die('Sorry, pushpullresponse.html was not found in the backend plugin. This is an installation problem.');
-    }
-  }
-
-  private function do_git()
-  {
-    if(!isset($_SESSION['backend_logged_in']) || !$_SESSION['backend_logged_in']) die(json_encode(array('error' => 'Error: Unathorized')));
-
-    $output = array(
-      'have_git' => 0,
-      'have_repo' => 0,
-      'remotes' => array(),
-    );
-
-    require_once 'Git-php-lib';
-    $output['have_git'] = GitRepo::test_git();
-
-    if($output['have_git']) {
-      try {
-        $repo = Git::open('.');
-        if(Git::is_repo($repo)) {
-          $output['have_repo'] = true;
-
-          $remotes_string = $repo->run('remote');
-          $output['remotes'] = preg_split('/\s*\r?\n\r?\s*/', $remotes_string, 0, PREG_SPLIT_NO_EMPTY);
-        }
-      }
-      catch(Exception $e) { }
-    }
-
-    die(json_encode($output));
   }
 
   private function do_clearcache()
