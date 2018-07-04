@@ -10,7 +10,7 @@ Date: 30 June 2018
 
 - [Walking the Watershed](http://gdl.cdlr.strath.ac.uk/hewwat/) - The Border to Cape Wrath along Scotland's Great Divide - Dave Hewitt (TACit Press, June 1994) ISBN 0952268019 - complete book online as part of the Glasgow Digital Library
 - [britishwatershed.blogspot.co.uk](http://britishwatershed.blogspot.co.uk/) - Malcolm Wylie's blog about his walk from John o'Groats to Land's End
-- [Ribbon of Wildness](http://www.luath.co.uk/ribbon-of-wildness-discovering-the-watershed-of-scotland.html): Discovering the Watershed of Scotland - Peter Wright (Luath Press, September 2010) ISBN 9781906817459
+- [Ribbon of Wildness](https://www.luath.co.uk/mountaineering-and-hillwalking/ribbon-of-wildness): Discovering the Watershed of Scotland - Peter Wright (Luath Press, September 2010) ISBN 9781906817459
   - [ribbonofwildness.co.uk](http://www.ribbonofwildness.co.uk/) - Peter Wright's own website
 - [The Backbone of England](http://www.andrewbibby.com/misc/backbone.html) - Andrew Bibby (Frances Lincoln, 2011) ISBN 978-0711231290
 
@@ -25,14 +25,14 @@ Date: 30 June 2018
 ## Mapping
 
 - [Ordance Survey Explorer (1:25,000) maps](http://www.shop.ordnancesurveyleisure.co.uk/products/paper-maps/paper-maps-ordnance-survey-great-britain/paper-maps-ordnance-survey-great-britain-os-explorer-map)
-- [Bing maps](http://bing.com/maps) - Ordnance Survey 1:25,000 and 1:50,000 mapping online
+- [Bing maps](https://www.bing.com/maps?mkt=en-GB&sty=s) - Ordnance Survey 1:25,000 and 1:50,000 mapping online
 - [OpenCycleMap.org](http://www.opencyclemap.org/) (helpful additional topographic information)
 
 ## Mapping services and APIs
 
-- [Ordnance Survey OpenSpace](http://www.ordnancesurvey.co.uk/oswebsite/web-services/os-openspace/api/index.html)
-  - [OpenSpace API](http://www.ordnancesurvey.co.uk/oswebsite/support/web-services/API%20documentation/OpenSpaceAPIDocs4.0/files/OpenSpace-js.html)
-  - [Similar but not identical OpenSpace API](http://openspace.ordnancesurveyite.co.uk/docs/4.0.0/files/OpenSpace-js.html)
+- [Ordnance Survey OpenSpace](https://www.ordnancesurvey.co.uk/business-and-government/products/os-openspace/index.html)
+  - [OpenSpace API](https://www.ordnancesurvey.co.uk/business-and-government/products/os-openspace/api/index.html)
+  - [OpenSpace API 4.0 docs](http://openspace.ordnancesurveyite.co.uk/docs/4.0.0/files/OpenSpace-js.html)
 - [OpenLayers](http://openlayers.org/) - from which OpenSpace was derived
   - [OpenLayers](http://dev.openlayers.org/apidocs/files/OpenLayers-js.html) API
 
