@@ -1,3 +1,3 @@
-# watershed
+# Watershed
 
-Code and core dataset for watershed pages
+Code, core dataset and content for watershed pages.

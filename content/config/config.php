@@ -52,6 +52,8 @@
  */
 // $config['DummyPlugin.enabled'] = false;      // Force DummyPlugin to be disabled
 
+$config['RssMaker.enabled'] = true;
+
 /*
  * CUSTOM
  */
