@@ -90,7 +90,7 @@ final class RssMaker extends AbstractPicoPlugin
                     $rss .= '</title>';
 
                     $rss .= '<description>';
-                    $rss .= $page['content'];
+                    $rss .= htmlspecialchars($page['content']);
                     $rss .= '</description>';
 
                     $rss .= '<link>';
