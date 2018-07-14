@@ -2,15 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-
     <link rel="shortcut icon" href="http://www.loughrigg.org/watershed/watershed.ico" />
-
     <link href="http://loughrigg.org/watershed/content/feed" rel="alternate" type="application/rss+xml" title="A Watershed Walk"/>
-
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-
     <title>{% if meta.title %}{{ meta.title }} | {% endif %}{{ site_title }}</title>
     {% if meta.description %}
         <meta name="description" content="{{ meta.description|striptags }}">
@@ -18,12 +12,12 @@
         <meta name="robots" content="{{ meta.robots }}">
     {% endif %}
 
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,700" type="text/css" />
     <link rel="stylesheet" href="{{ theme_url }}/style.css" type="text/css" />
     <link rel="stylesheet" href="{{ theme_url }}/fontello.css" type="text/css" />
 
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-
     <script src="{{ theme_url }}/scripts/modernizr-2.6.1.min.js"></script>
 </head>
 <body>

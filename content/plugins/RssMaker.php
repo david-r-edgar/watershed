@@ -81,6 +81,13 @@ final class RssMaker extends AbstractPicoPlugin
             $rss .= '</title>';
             $rss .= '<atom:link href="{{ base_url }}/feed" rel="self" type="application/rss+xml" />';
 
+            function sortByPubDate($a, $b)
+            {
+                return $b['time'] - $a['time'];
+            }
+
+            usort($pages, "sortByPubDate");
+
             //Page loop
             foreach ($pages as $page) {
                 if (!empty($page['date'])) {
