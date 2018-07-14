@@ -71,7 +71,7 @@ final class RssMaker extends AbstractPicoPlugin
         if ($this->giveFeed) {
             //Sitemap found, 200 OK
             header($_SERVER['SERVER_PROTOCOL'] . ' 200 OK');
-            header("Content-Type: application/rss+xml; charset=UTF-8");
+            header("Content-Type: application/xml; charset=UTF-8");
 
             //RSS Start
             $rss = '<?xml version="1.0" encoding="utf-8"?>';
@@ -79,7 +79,13 @@ final class RssMaker extends AbstractPicoPlugin
             $rss .= '<channel><title>';
             $rss .= $this->feedTitle;
             $rss .= '</title>';
-            $rss .= '<atom:link href="{{ base_url }}/feed" rel="self" type="application/rss+xml" />';
+            $rss .= '<atom:link href="' . $this->baseURL . 'feed" rel="self" />';
+
+            $rss .= '<image>';
+            $rss .= '<url>' . $this->baseURL . '../watershed.ico</url>';
+            $rss .= '<title>A Watershed Walk</title>';
+            $rss .= '<link>' . $this->baseURL . '</link>';
+            $rss .= '</image>';
 
             function sortByPubDate($a, $b)
             {

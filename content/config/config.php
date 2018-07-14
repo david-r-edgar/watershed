@@ -19,7 +19,7 @@
 /*
  * BASIC
  */
-// $config['site_title'] = 'Pico';              // Site title
+ $config['site_title'] = 'A Watershed Walk';              // Site title
 // $config['base_url'] = '';                    // Override base URL (e.g. http://example.com)
 // $config['rewrite_url'] = null;               // A boolean indicating forced URL rewriting
 
