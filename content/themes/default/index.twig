@@ -7,6 +7,8 @@
 
     <link rel="shortcut icon" href="http://www.loughrigg.org/watershed/watershed.ico" />
 
+    <link href="http://loughrigg.org/watershed/content/feed" rel="alternate" type="application/rss+xml" title="A Watershed Walk"/>
+
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
     <title>{% if meta.title %}{{ meta.title }} | {% endif %}{{ site_title }}</title>
@@ -63,8 +65,12 @@
     </section>
 
     <footer id="footer">
-        <div class="inner">
+        <div class="footerContent">
             Copyright &copy; 2013-2018 David R Edgar
+
+            <span class="footerRight">
+              <a href="feed"><img src="themes/default/RSS-logo_18.png"> RSS feed</a>
+            </span>
         </div>
     </footer>
 
