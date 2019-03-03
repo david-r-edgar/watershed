@@ -166,7 +166,6 @@ function addMarker(e, n, txt) {
 
 
 function markersCallback(data) {
-  var points = [];
   for (p in data) {
     if ((!isNaN(data[p].E) && !isNaN(data[p].N))
         && (currentPos.E != data[p].E && currentPos.N != data[p].N)) {
@@ -182,7 +181,6 @@ function markersCallback(data) {
 }
 
 function issuesCallback(data) {
-  var points = [];
   for (p in data) {
     if (!isNaN(data[p].E) && !isNaN(data[p].N)) {
       var txt = getPopupBoxText(data[p].E, data[p].N,
@@ -196,7 +194,6 @@ function issuesCallback(data) {
 }
 
 function watersourcesCallback(data) {
-  var points = [];
   for (p in data) {
     if (!isNaN(data[p].E) && !isNaN(data[p].N)) {
       var txt = getPopupBoxText(data[p].E, data[p].N,
@@ -268,8 +265,6 @@ var routeStartPos;
 var routeFinishPos;
 
 function majorMarkersCallback(data) {
-  var points = [];
-
   var size = new OpenLayers.Size(32, 32);
   var offset = new OpenLayers.Pixel(-16, -32);
   var infoWindowAnchor = new OpenLayers.Pixel(18, 30);
