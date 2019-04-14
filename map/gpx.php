@@ -1,4 +1,7 @@
 <?php
+
+$base = "http://" . $_SERVER['SERVER_NAME'] . substr($_SERVER['REQUEST_URI'], 0, strpos($_SERVER['REQUEST_URI'], basename(__FILE__)));
+
 header('Content-type:"application/gpx+xml"; charset="UTF-8"');
 header('Content-Disposition: inline; filename="route.gpx"');
 
@@ -17,25 +20,20 @@ if (isset($_GET["yt"])) $topBound = (int)$_GET["yt"];
 
 $resultArr = array();
 
-$datafile = "fulldata.json";
-$fulldata = file_get_contents ($datafile);
+$fulldata = file_get_contents($base . "api/waypoints/markers?xl=" . $leftBound . "&xr=" . $rightBound . "&yb=" . $bottomBound . "&yt=" . $topBound);
 $fulljson = json_decode($fulldata, true);
 
 echo "<gpx xmlns=\"http://www.topografix.com/GPX/1/1\" version=\"1.1\" creator=\"http://www.loughrigg.org/watershed/gpx.php\">\n";
 echo "<rte>\n";
 echo "<name>watershed</name>\n";
 
-foreach ($fulljson["mainWS"] as $point)
+foreach ($fulljson as $point)
 {
-	if (($leftBound <= $point["E"]) && ($point["E"] <= $rightBound)
-		&& ($bottomBound <= $point["N"]) && ($point["N"] <= $topBound))
-	{
-		$ptWGS84 = NGR2LL_d($point["E"],$point["N"]);
-		echo "<rtept lat=\"" . $ptWGS84[0] . "\" lon=\"" . $ptWGS84[1] . "\">\n";
-		echo "<name>" . $point["Name"] . "</name>\n";
-		echo "<desc>" . $point["Note"] . "</desc>\n";
-		echo "</rtept>\n";
-	}
+	$ptWGS84 = NGR2LL_d($point["E"],$point["N"]);
+	echo "<rtept lat=\"" . $ptWGS84[0] . "\" lon=\"" . $ptWGS84[1] . "\">\n";
+	echo "<name>" . $point["Name"] . "</name>\n";
+	echo "<desc>" . $point["Note"] . "</desc>\n";
+	echo "</rtept>\n";
 }
 echo "</rte>\n</gpx>\n";
 
