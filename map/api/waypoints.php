@@ -115,6 +115,17 @@ class Waypoints {
     return $point;
   }
 
+  public static function setCurrentPosition($doneuptoE, $doneuptoN) {
+
+    list($valid, $doneDist, $todoDist) = Waypoints::checkValidPoint($doneuptoE, $doneuptoN);
+    if ($valid)
+    {
+      Waypoints::updateDoneupto($doneuptoE, $doneuptoN);
+    }
+
+    return [$valid, $doneDist, $todoDist];
+  }
+
   private static function getMainWithDistances()
   {
     $mainWithDistanceSoFar = array();
@@ -160,6 +171,53 @@ class Waypoints {
     $dist = sqrt($distE * $distE + $distN * $distN);
     return $dist;
   }
+
+  // TODO rewrite this using getMainWithDistances???
+  private static function checkValidPoint($de, $dn)
+  {
+    $filecontents = file_get_contents ("../fulldata.json");
+    $fulljson = json_decode($filecontents, true);
+    $cumulDist = 0;
+    $todoDist = 0;
+    $found = false;
+    $lastPointE = 0;
+    $lastPointN = 0;
+
+    foreach ($fulljson["mainWS"] as $point)
+    {
+
+      $dist = Waypoints::distanceBetweenPoints($lastPointE, $lastPointN, $point["E"], $point["N"]);
+      if ($lastPointE != 0 && $lastPointN != 0)
+      {
+        if ($found)
+        {
+          $todoDist += $dist;
+        }
+        else
+        {
+          $cumulDist += $dist;
+        }
+      }
+      if ($point["E"] == $de && $point["N"] == $dn)
+      {
+        $found = true;
+      }
+
+      $lastPointE = $point["E"];
+      $lastPointN = $point["N"];
+    }
+    return array($found, $cumulDist, $todoDist);
+  }
+
+  private static function updateDoneupto($de, $dn)
+  {
+    $ptStr = $de . "," . $dn;
+    $fh = fopen("../doneupto.txt", 'r+');
+    fwrite($fh, $ptStr);
+    fclose($fh);
+    return 0;
+  }
+
 }
 
 ?>

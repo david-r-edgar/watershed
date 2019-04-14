@@ -40,8 +40,12 @@ Flight::route('GET /waypoints/issues', function() {
 });
 
 // changes - now returns just a wpt object, rather than an array containing the wpt object
-Flight::route('/waypoints/currentposition', function() {
+Flight::route('GET /waypoints/currentposition', function() {
   Flight::json(Waypoints::getCurrentPosition());
+});
+
+Flight::route('POST /waypoints/currentposition/@doneuptoE/@doneuptoN', function($doneuptoE, $doneuptoN) {
+  Flight::json(Waypoints::setCurrentPosition($doneuptoE, $doneuptoN));
 });
 
 Flight::start();

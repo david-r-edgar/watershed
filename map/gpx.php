@@ -7,6 +7,10 @@ header('Content-Disposition: inline; filename="route.gpx"');
 
 require 'coordConversion.php';
 
+// ideally want to select start and end point from list, then pick all between
+// list could pass in coords of both points
+// so api should accept x1,y1 & x2,y2, then find all intermediates inclusive
+
 //get left, right, top, bottom bounds from args
 $leftBound = 100000;
 $rightBound = 700000;

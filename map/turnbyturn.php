@@ -120,7 +120,7 @@ function ConvertEastingAndNorthingToOSgridref($e, $n, $digits)
     {
         return "";
     }
-    
+
     // get the 100km-grid indices
     $e100k = floor($e/100000);
     $n100k = floor($n/100000);
@@ -130,7 +130,7 @@ function ConvertEastingAndNorthingToOSgridref($e, $n, $digits)
     // translate those into numeric equivalents of the grid letters
     $l1 = (19-$n100k) - (19-$n100k)%5 + floor(($e100k+10)/5);
     $l2 = (19-$n100k)*5%25 + $e100k%5;
-    
+
     // compensate for skipped 'I' and build grid letter-pairs
     if ($l1 > 7) $l1++;
     if ($l2 > 7) $l2++;
@@ -197,16 +197,6 @@ $datafile = "fulldata.json";
 $fulldata = file_get_contents ($datafile);
 $fulljson = json_decode($fulldata, true);
 
-//echo "<gpx xmlns=\"http://www.topografix.com/GPX/1/1\" version=\"1.1\" creator=\"http://www.loughrigg.org/watershed/gpx.php\">\n";
-//echo "<rte>\n";
-//echo "<name>watershed</name>\n";
-
-
-
-
-
-
-
 $lastPointE = 0;
 $lastPointN = 0;
 
@@ -216,18 +206,18 @@ foreach ($fulljson["mainWS"] as $point)
 {
     list($twoLetters, $e100k, $e5, $n100k, $n5)
         = ConvertEastingAndNorthingToOSgridref($point["E"], $point["N"], 10);
-    
+
     //$gridRef = $letPair . ' ' . padLz($e, ($digits/2)) . ' ' . padLz($n, ($digits/2));
 
     //return array($letPair, $e100k, padLz($e, ($digits/2)), $n100k, padLz($n, ($digits/2)));
-    
-    
+
+
     $dist = GetDistanceBetweenPoints($lastPointE, $lastPointN, $point["E"], $point["N"]);
     $bearingDeg = GetBearingToNext($point["E"] - $lastPointE, $point["N"] - $lastPointN, $dist);
     $compassPoint = GetCompassPointForBearing($bearingDeg);
 
     echo "<div class=eachline>\n";
-      
+
     echo "<span class=directions>\n";
     if ($lastPointE != 0 && $lastPointN != 0)
     {
@@ -252,7 +242,7 @@ foreach ($fulljson["mainWS"] as $point)
 	echo "<span class=name>" . $point["Name"] . "</span>\n";
 	echo "<span class=note>" . $point["Note"] . "</span>\n";
     echo "</div>\n";
-    
+
     $lastPointE = $point["E"];
     $lastPointN = $point["N"];
 }
