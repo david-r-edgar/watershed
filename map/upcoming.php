@@ -105,20 +105,18 @@ $base = "http://" . $_SERVER['SERVER_NAME'] . substr($_SERVER['REQUEST_URI'], 0,
 
 <?php
 
-//TODO replace this with an API call
 $datafile = "fulldata.json";
 $fulldata = file_get_contents ($datafile);
 $fulljson = json_decode($fulldata, true);
 
-
-$curposnText = file_get_contents($base . "api/waypoints/currentposition");
-$curposn = json_decode($curposnText, true);
+$curposnText = file_get_contents("doneupto.txt");
+list($curposnE, $curposnN) = explode(",", $curposnText);
 
 // find posn of curposn in fulljson
 for ($i = 0; $i < count($fulljson["mainWS"]); $i++)
 {
-    if ($fulljson["mainWS"][$i]["E"] == $curposn["E"] &&
-        $fulljson["mainWS"][$i]["N"] == $curposn["N"])
+    if ($fulljson["mainWS"][$i]["E"] == $curposnE &&
+        $fulljson["mainWS"][$i]["N"] == $curposnN)
     {
         break;
     }
@@ -132,7 +130,7 @@ foreach($pointsToDisplay as $point)
 
     echo "<div class=eachline>";
 
-    if ($point["E"] == $curposn["E"] && $point["N"] == $curposn["N"])
+    if ($point["E"] == $curposnE && $point["N"] == $curposnN)
     {
         $curPosnClass = "curposnline";
         echo "<span class=\"setlink " . $curPosnClass . "\"><img src=\"currentHiker.png\"></span>";
