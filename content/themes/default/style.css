@@ -358,6 +358,12 @@ dd {
   padding-top: 15px;
   padding-bottom: 35px;
 }
+@media only screen and (min-width: 480px) and (max-width: 767px) {
+  .inner .post-image img {
+    width: auto;
+    height: auto;
+  }
+}
 .post-image .caption {
   font-size: small;
 }
@@ -390,7 +396,8 @@ dd {
         width: 85%;
     }
     .inner img {
-        width:100%;
+        width: 100%;
+        height: 100%;
     }
     #header {
         margin-bottom: 40px;
