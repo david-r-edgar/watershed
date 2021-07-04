@@ -51,6 +51,12 @@ class Waypoints {
     return $markersArr;
   }
 
+  public static function getWaypointInfo($e, $n) {
+    $wsCache = file_get_contents ("../mainWScache.json");
+    $wptInfoArr = json_decode($wsCache, true);
+    return $wptInfoArr[$e . "," . $n];
+  }
+
   public static function getMarkers($xl, $xr, $yb, $yt) {
     $markersArr = array();
 
@@ -73,8 +79,17 @@ class Waypoints {
     $filecontents = file_get_contents ("../fulldata.json");
     $contentsJSON = json_decode($filecontents, true);
     $datasetLen = count($contentsJSON["mainWS"]);
-    array_push($majorMarkersArr, $contentsJSON["mainWS"][0]);
-    array_push($majorMarkersArr, $contentsJSON["mainWS"][$datasetLen - 1]);
+
+    $start = $contentsJSON["mainWS"][0];
+    $wptInfo = Waypoints::getWaypointInfo($start["E"], $start["N"]);
+    $start = array_merge($start, $wptInfo);
+    array_push($majorMarkersArr, $start);
+
+    $finish = $contentsJSON["mainWS"][$datasetLen - 1];
+    $wptInfo = Waypoints::getWaypointInfo($finish["E"], $finish["N"]);
+    $finish = array_merge($finish, $wptInfo);
+    array_push($majorMarkersArr, $finish);
+
     return $majorMarkersArr;
   }
 
@@ -112,6 +127,10 @@ class Waypoints {
         break;
       }
     }
+
+    $wptInfo = Waypoints::getWaypointInfo($point["E"], $point["N"]);
+    $point = array_merge($point, $wptInfo);
+
     return $point;
   }
 

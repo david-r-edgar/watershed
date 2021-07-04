@@ -1,0 +1,146 @@
+body
+{
+  font-size: 14px;
+}
+
+.navbar-static-top
+{
+  margin-bottom: 0px;
+  min-height: inherit;
+  border-bottom-width: 0px;
+}
+
+.navbar-static-top .container-fluid
+{
+  padding: 0px;
+}
+
+#watershedHeader
+{
+  position: relative;
+  top: 0em;
+  width: 100%;
+  height: 15px;
+  background-color: #809655;
+  color: white;
+  font-size: 11px;
+  font-family: Verdana, Geneva, sans-serif;
+  font-weight: 900;
+}
+
+#watershedHeader div ul
+{
+  margin: 0px;
+  margin-left: 1.5em;
+  -webkit-padding-start: 0px;
+}
+
+#watershedHeader div ul li
+{
+  display:inline;
+  padding-right: 2em;
+  text-align: -webkit-match-parent;
+  line-height: 15px;
+  margin-left: 1.5em;
+}
+
+#watershedHeader div ul li a
+{
+  text-decoration: none;
+  color: white;
+}
+
+.leaflet-control-scale
+{
+  left: 110px;
+}
+
+#map {
+  z-index: -1;
+}
+
+#infoPane {
+  position: fixed;
+  top: 120px;
+  right: -315px;
+  width: 349px;
+  transition: 0.5s all ease;
+  overflow-y: auto;
+}
+
+#infoPane.open {
+  right: 0%;
+}
+
+.infoHandle {
+  font-size: 24px;
+  font-weight: bold;
+  position: absolute;
+  background-color: #809655;
+  bottom: 20px;
+  width: 34px;
+  border-top-left-radius: 16px;
+  border-bottom-left-radius: 16px;
+  padding-left: 4px;
+}
+
+#infoToggle {
+  border: none;
+  background: transparent;
+  padding: 0px;
+  font: inherit;
+  color: white;
+}
+
+.infoContentContainer
+{
+  background-color: #809655;
+  color: white;
+  left: 34px;
+  position: relative;
+  width: 310px;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+  border-left: 5px solid #809655;
+  border-top: 5px solid #809655;
+  border-bottom: 5px solid #809655;
+}
+
+@media (max-width: 768px)
+{
+  #infoPane
+  {
+    right: -265px;
+    width: 299px;
+  }
+
+  .infoContentContainer
+  {
+    width: 260px;
+  }
+}
+
+.infoContent
+{
+  padding: 8px;
+  font-family: Verdana, Geneva, sans-serif;
+  color: #666;
+  background-color: white;
+}
+
+.infoTitle
+{
+  color: #444;
+  font-family: "Trebuchet MS",Helvetica,sans-serif;
+  margin: 8px 0px;
+}
+
+.infoDescr
+{
+  font-size: 0.9em;
+}
+
+.todocompl
+{
+  line-height: 1.8em;
+}

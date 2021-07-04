@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>A Watershed Walk - map</title>
+    <link rel="shortcut icon" href="https://www.loughrigg.org/watershed/watershed.ico" />
+    <link rel="stylesheet" href="https://labs.os.uk/public/os-api-branding/v0.2.0/os-api-branding.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+      body { margin:0; padding:0; }
+      #map { position:absolute; top:15px; bottom:0; width:100%; }
+    </style>
+    <link rel="stylesheet" href="map.css" />
+  </head>
+  <body>
+
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container-fluid">
+        <div id="watershedHeader">
+          <div style="padding: 0px 20px;">
+            <ul>
+              <li><a href=".">Map</a></li>
+              <li><a href="../content/diary">Diary</a></li>
+              <li><a href="../content/about">About</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <div id="map"></div>
+
+    <div id="infoPane">
+      <div class="infoHandle"><button id="infoToggle">ⓘ</button></div>
+      <div class="infoContentContainer">
+        <div class="infoContent">
+          <h3 class="infoTitle">A Watershed Walk</h3>
+          <p class="infoDescr">Starting at Dunnet Head, where the Atlantic Ocean meets the North Sea on the north coast of Scotland</p>
+          <p class="infoDescr">Finishing at Leathercote Point, where the Channel meets the North Sea at the south-east corner of England</p>
+          <p class="infoDescr">Following the line of the watershed, being the drainage divide between the waters flowing towards the Atlantic Ocean (and its arms the Irish Sea and the Channel) and the waters flowing towards the North Sea</p>
+
+          <div class=todocompl>Done: <span class="routeLenCompl"></span> km</div>
+          <div class=todocompl>To do: <span class="routeLenToDo"></span> km</div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/fetch/3.6.2/fetch.min.js"></script>
+    <script src="https://labs.os.uk/public/os-api-branding/v0.2.0/os-api-branding.js"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.7.0/proj4.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4leaflet/1.0.2/proj4leaflet.min.js"></script>
+    <script type="module" src="map.js"></script>
+
+    <script>
+      const button = document.querySelector('#infoToggle')
+      const pane = document.querySelector('#infoPane')
+
+      button.addEventListener('click', () => {
+        pane.classList.toggle('open')
+      })
+    </script>
+
+  </body>
+</html>

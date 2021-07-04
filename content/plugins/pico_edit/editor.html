@@ -276,9 +276,11 @@
 
 
 						// Window resize
-						$('body,#main,#epiceditor').height($(window).height());
+						$('body,#main').height($(window).height());
+						$('#epiceditor').height($(window).height() - 34); // subtract the height of the menu bar: otherwise menu bar permanently vanishes off top on long docs
 						$(window).resize(function() {
-							$('body,#main,#epiceditor').height($(window).height());
+							$('body,#main').height($(window).height());
+							$('#epiceditor').height($(window).height() - 34); // hacky but I don't care
 							editor.reflow();
 						});
 

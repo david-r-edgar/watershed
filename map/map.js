@@ -1,356 +1,242 @@
-var lastUpdLbrt = [0,0,0,0];
+import config from './config.js'
+import * as utils from './utils.js'
+import * as templater from './templater.js'
+import { getIcon } from './icons.js'
 
-var zoom=0;
-var gotWatersources = false;
-var gotIssues = false;
+const serviceUrl = 'https://api.os.uk/maps/raster/v1/zxy'
 
-var markerList = [];
+let map
+const overlayLayers = {}
 
-var wpIconSize = new OpenLayers.Size(14, 20);
-var wpIconOffset = new OpenLayers.Pixel(-7, -18);
-var wpIconInfoWindowAnchor = new OpenLayers.Pixel(9, 18);
-
-function getWpIcon() {
-  var iconUrl = "transpSP.png";
-  var wpIcon = new OpenSpace.Icon(iconUrl, wpIconSize, wpIconOffset,
-                                      null, wpIconInfoWindowAnchor);
-  return wpIcon;
-}
-
-var issuesIconSize = new OpenLayers.Size(21, 30);
-var issuesIconOffset = new OpenLayers.Pixel(-10, -30);
-var issuesIconInfoWindowAnchor = new OpenLayers.Pixel(16, 13);
-
-function getIssuesIcon() {
-  var iconUrl = "issue.png";
-  var issuesIcon = new OpenSpace.Icon(iconUrl, issuesIconSize, issuesIconOffset,
-                                        null, issuesIconInfoWindowAnchor);
-  return issuesIcon;
-}
-
-var watersourcesIconSize = new OpenLayers.Size(19, 28);
-var watersourcesIconOffset = new OpenLayers.Pixel(-9, -28);
-var watersourcesIconInfoWindowAnchor = new OpenLayers.Pixel(16, 9);
-
-function getWatersourcesIcon() {
-  var iconUrl = "watersource.png";
-  var watersourcesIcon = new OpenSpace.Icon(iconUrl, watersourcesIconSize,
-                                            watersourcesIconOffset, null,
-                                            watersourcesIconInfoWindowAnchor);
-  return watersourcesIcon;
-}
-
-function getPopupBoxText(posE, posN, heading1, description, prefix) {
-  var osGR = new OsGridRef(posE, posN);
-  var osLL = OsGridRef.osGridToLatLong(osGR);
-
-  var wgs84LL = CoordTransform.convertOSGB36toWGS84(osLL);
-  var geohackUrl = "http://toolserver.org/~geohack/geohack.php?pagename="
-              + heading1 + "&params=" + wgs84LL._lat + "_N_"
-              + wgs84LL._lon + "_E_region:GB_type:landmark";
-  var bingUrl = "https://www.bing.com/maps/?&cp="
-              + wgs84LL._lat + "~" + wgs84LL._lon + "&lvl=15&sty=s";
-
-  var txt = "<b>";
-  if (typeof prefix == "string" && prefix.length > 0) {
-    txt += prefix;
+function initBaseLayers () {
+  return {
+    light: L.tileLayer(`${serviceUrl}/Light_27700/{z}/{x}/{y}.png?key=${config.apiKey}`, { maxZoom: 20 }),
+    outdoor: L.tileLayer(`${serviceUrl}/Outdoor_27700/{z}/{x}/{y}.png?key=${config.apiKey}`, { maxZoom: 20 }),
+    road: L.tileLayer(`${serviceUrl}Road_27700/{z}/{x}/{y}.png?key=${config.apiKey}`, { maxZoom: 20 }),
+    leisure: L.tileLayer(`${serviceUrl}/Leisure_27700/{z}/{x}/{y}.png?key=${config.apiKey}`, { maxZoom: 20 })
   }
-  txt += heading1 + "</b>\r\n<br>\r\n";
-  if (typeof description == "string" && description.length > 0) {
-    txt += description + "\r\n<br>\r\n";
-  }
-  txt += "<p>\r\ngrid ref: " + osGR.easting + ", " + osGR.northing + "</p>\r\n"
-  txt += "<ul>\r\n<li><a href=\"" + geohackUrl
-         + "\" target='_blank'>geohack map sources</a></li>\r\n<li>"
-         + "<a href=\"" + bingUrl
-         + "\" target='_blank'>bing OS 1:25,000</a></li></ul>\r\n";
-  return txt;
 }
 
-function handleMoveend() {
-  if (map.zoom < 2) {
-    map.clearMarkers();
-    markerList = [];
+// the UI radio selector element for the different base layers
+const setupLayerControl = function(baseLayers, overlayLayers) {
+  const baseMaps = {
+    'Leisure': baseLayers.leisure,
+    'Light': baseLayers.light,
+    'Outdoor': baseLayers.outdoor,
+    'Road': baseLayers.road,
   }
+  const overlayMaps = {
+    'Start+Now+Finish': overlayLayers.majorMarkers,
+    'Waypoints': overlayLayers.wptLayer,
+    'Major sources': overlayLayers.waterSources,
+    'Issues': overlayLayers.issues
+  }
+  L.control.layers(baseMaps, overlayMaps).addTo(map)
+}
 
-  if (map.zoom >= 4) {
-    var oBnds = map.getExtent();
-    var lbrt = oBnds.toArray();
-    if ((Math.abs(lbrt[0] - lastUpdLbrt[0]) > 30000)
-      || (Math.abs(lbrt[1] - lastUpdLbrt[1]) > 30000)
-      || (Math.abs(lbrt[2] - lastUpdLbrt[2]) > 30000)
-      || (Math.abs(lbrt[3] - lastUpdLbrt[3]) > 30000)) {
-      var url = "api/waypoints/markers?xl=" + (lbrt[0] - 30000) + "&xr=" + (lbrt[2] + 30000) +
-              "&yb=" + (lbrt[1] - 30000) + "&yt=" + (lbrt[3] + 30000);
-      $.ajax({
-        url: url,
-        dataType: 'json',
-        success: markersCallback
-      });
+const initMap = function(rootElementId) {
+  const crs = utils.getProjectionCRS()
 
-      lastUpdLbrt = lbrt;
-    }
-    defaultMarkerLayer.setVisibility(true);
+  const baseLayers = initBaseLayers()
+
+  const mapOptions = {
+    crs,
+    layers: [ baseLayers.outdoor ],
+    minZoom: 0,
+    maxZoom: 9,
+    center: utils.transformToLatLong([ 368727, 534316 ]),
+    zoom: 0,
+    maxBounds: [
+      utils.transformToLatLong([ -238375.0, 0.0 ]),
+      utils.transformToLatLong([ 900000.0, 1376256.0 ])
+    ],
+    attributionControl: false
+  }
+  map = L.map(rootElementId, mapOptions)
+
+  overlayLayers.wptLayer = L.layerGroup()
+  overlayLayers.majorMarkers = L.layerGroup()
+  overlayLayers.waterSources = L.layerGroup()
+  overlayLayers.issues = L.layerGroup()
+
+  setupLayerControl(baseLayers, overlayLayers)
+  L.control.scale().addTo(map)
+
+  map.on('moveend', (ev) => {
+    handleMapMove(overlayLayers)
+  })
+}
+
+// triggered at the end of every map move and map zoom
+function handleMapMove(overlayLayers) {
+  const zoom = map.getZoom()
+
+  // console.log('zoom', zoom)
+
+  if (zoom >= 3) {
+    showWaypointsWithinBounds(map.getBounds(), overlayLayers.wptLayer)
+    overlayLayers.wptLayer.addTo(map)
   } else {
-    defaultMarkerLayer.setVisibility(false);
+    overlayLayers.wptLayer.removeFrom(map)
   }
 
-  if (map.zoom >= 5) {
-    if (!gotIssues) {
-      $.ajax({
-        url: "api/waypoints/issues",
-        dataType: 'json',
-        success: issuesCallback
-      });
-      gotIssues = true;
-    }
-    issuesLayer.setVisibility(true);
+  if (zoom >= 4) {
+    overlayLayers.waterSources.addTo(map)
   } else {
-    //hide issues layer
-    issuesLayer.setVisibility(false);
+    overlayLayers.waterSources.removeFrom(map)
   }
 
-  if (map.zoom >= 4) {
-    if (!gotWatersources) {
-      $.ajax({
-        url: "api/waypoints/watersources",
-        dataType: 'json',
-        success: watersourcesCallback
-      });
-      gotWatersources = true;
-    }
-    watersourcesLayer.setVisibility(true);
+  if (zoom >= 5) {
+    overlayLayers.issues.addTo(map)
   } else {
-      //hide watersources layer
-      watersourcesLayer.setVisibility(false);
+    overlayLayers.issues.removeFrom(map)
   }
 }
 
-function replaceRoute(points, alreadyComplete) {
-  //kill the existing route (removeFeatures()?)
+function showRouteSection(data, alreadyComplete) {
+  const colour = alreadyComplete ? '#33DD44 ': '#AA0099'
+  const points = []
+  for (const p of data) {
+    if (!isNaN(p.E) && !isNaN(p.N)) {
+      const coords = utils.transformToLatLong([p.E, p.N])
+      points.push(coords)
+    }
+  }
+  L.polyline(points, {color: colour}).addTo(map)
+}
 
-  var lineString = new OpenLayers.Geometry.LineString(points);
+const loadRoute = async function() {
+  const fetchedDone = await window.fetch('api/waypoints/done')
+  const doneJson = await fetchedDone.json()
+  showRouteSection(doneJson, true)
 
-  var mapProj = map.getProjectionObject();
-  var dist = lineString.getGeodesicLength(mapProj) / 1000;
-  if (true == alreadyComplete) {
-    $(".routeLenCompl").text(dist.toFixed(1));
+  const fetchedTodo = await window.fetch('api/waypoints/todo')
+  const todoJson = await fetchedTodo.json()
+  showRouteSection(todoJson, false)
+}
+
+// last bounds we've shown waypoints for (for 'caching' purposes)
+let lastEnws = [0, 0, 0, 0]
+
+async function showWaypointsWithinBounds(bounds, layer) {
+  // console.log({bounds})
+
+  const neCoords = utils.transformToOSGB([bounds._northEast.lat, bounds._northEast.lng])
+  const swCoords = utils.transformToOSGB([bounds._southWest.lat, bounds._southWest.lng])
+  const enws = [...neCoords, ...swCoords]
+
+  if (enws.filter((coordVal, index) => {
+    return (Math.abs(coordVal - lastEnws[index]) > 30000)
+  }).length > 0) {
+    // fetch from a wider area than the bounds of the map
+    const url = `api/waypoints/markers?xl=${enws[2] - 30000}&xr=${enws[0] + 30000}&yb=${enws[3] - 30000}&yt=${enws[1] + 30000}`
+    const fetchedWpts = await window.fetch(url)
+    const wpts = await fetchedWpts.json()
+    showWaypoints(wpts, layer)
+
+    lastEnws = enws
+  }
+}
+
+const majorMarkerLocations = []
+
+function showWaypoints(data, layer) {
+  layer.clearLayers() //clear all previous waypoints from the layer
+  for (const p of data) {
+    // avoid showing regular waypoints in the same location as start/finish/curPos
+    if (!majorMarkerLocations.find(e => {return (e[0] === p.E && e[1] === p.N)})) {
+      showMarker(p, layer, 'wp', p.Name, p.distSoFar, p.distRemaining, p.Note)
+    }
+  }
+}
+
+function showMajorMarker(pt, layer, distFromStart, distToFinish, prefix) {
+  showMarker(pt, layer, 'end', pt.Name, distFromStart, distToFinish, pt.Note, `<u>${prefix}</u>: `)
+}
+
+function showMajorMarkers(majorMarkers, layer) {
+  showMajorMarker(majorMarkers[0], layer, null, majorMarkers[0].distToFinish * 1000, 'Start')
+  majorMarkerLocations.push([majorMarkers[0].E, majorMarkers[0].N])
+  showMajorMarker(majorMarkers[1], layer, majorMarkers[1].distFromStart * 1000, null, 'Finish')
+  majorMarkerLocations.push([majorMarkers[1].E, majorMarkers[1].N])
+}
+
+function showCurPos(curPos, layer) {
+  showMarker(curPos, layer, 'curPos', curPos.Name, curPos.distFromStart * 1000, curPos.distToFinish * 1000, curPos.Note, '<i>Current position: </i>')
+  majorMarkerLocations.push([curPos.E, curPos.N])
+}
+
+function updateInfoPaneDistances(curPos) {
+  document.querySelectorAll('.routeLenCompl').forEach(elem => {
+    elem.textContent = curPos.distFromStart.toFixed(1)
+  })
+  document.querySelectorAll('.routeLenToDo').forEach(elem => {
+    elem.textContent = curPos.distToFinish.toFixed(1)
+  })
+}
+
+function showSources(sources, layer) {
+  for (const p of sources) {
+    showMarker(p, layer, 'watersource', p.Place, p.distFromStart * 1000, p.distToFinish * 1000, p.Source)
+  }
+}
+
+function showIssues(issues, layer) {
+  for (const p of issues) {
+    showMarker(p, layer, 'issue', p.Place, p.distFromStart * 1000, p.distToFinish * 1000, p.Issue)
+  }
+}
+
+function showMarker(p, layer, icon, name, distFromStart, distToFinish, description, prefix) {
+  if (isNaN(p.E) || isNaN(p.N)) return
+  const latLng = utils.transformToLatLong([p.E, p.N])
+  const popupText = templater.getWaypointPopupText([p.E, p.N], latLng, name, distFromStart, distToFinish, description, prefix)
+  const markerOptions = { icon: getIcon(icon) }
+  const marker = L.marker(latLng, markerOptions).addTo(layer)
+  marker.bindPopup(popupText)
+}
+
+const loadMajorMarkers = async function() {
+  const fetchedMajorMarkers = await window.fetch('api/waypoints/majormarkers')
+  const majorMarkersJson = await fetchedMajorMarkers.json()
+  showMajorMarkers(majorMarkersJson, overlayLayers.majorMarkers)
+  overlayLayers.majorMarkers.addTo(map)
+}
+
+const loadCurPos = async function () {
+  const fetchedCurPos = await window.fetch('api/waypoints/currentposition')
+  const curPosJson = await fetchedCurPos.json()
+  showCurPos(curPosJson, overlayLayers.majorMarkers)
+  updateInfoPaneDistances(curPosJson)
+}
+
+const loadWaterSources = async function () {
+  const fetched = await window.fetch('api/waypoints/watersources')
+  const json = await fetched.json()
+  showSources(json, overlayLayers.waterSources)
+}
+
+const loadIssues = async function () {
+  const fetched = await window.fetch('api/waypoints/issues')
+  const json = await fetched.json()
+  showIssues(json, overlayLayers.issues)
+}
+
+const start = function() {
+  initMap('map')
+  loadRoute()
+  loadMajorMarkers()
+  loadCurPos()
+  loadWaterSources()
+  loadIssues()
+}
+
+function ready() {
+  if (document.readyState != 'loading') {
+    start()
   } else {
-    $(".routeLenToDo").text(dist.toFixed(1));
-  }
-
-  var line_style = {strokeColor: "#AA0099", strokeOpacity: 1, strokeWidth: 3};
-  if (true == alreadyComplete) {
-    line_style = {strokeColor: "#33DD44", strokeOpacity: 1, strokeWidth: 3};
-  }
-  var lineFeature = new OpenLayers.Feature.Vector(lineString, null, line_style);
-  defaultVectorLayer.addFeatures([lineFeature]);
-}
-
-function addMarker(e, n, txt) {
-  for (m = 0; m < markerList.length; m++) {
-    var cm = markerList[m];
-
-    if ((cm.lonlat.lon == e) && (cm.lonlat.lat == n)) {
-      markerList.splice(m, 1);
-      m --;
-      map.removeMarker(cm);
-    }
-  }
-
-  var pos = new OpenSpace.MapPoint(e, n);
-  var m1 = map.createMarker(pos, getWpIcon(), txt);
-  markerList.push(m1);
-}
-
-
-
-function markersCallback(data) {
-  for (p in data) {
-    if ((!isNaN(data[p].E) && !isNaN(data[p].N))
-        && (currentPos.E != data[p].E && currentPos.N != data[p].N)) {
-      var popupBoxNote =
-        (data[p].distSoFar / 1000).toFixed(1) + ' km from Dunnet Head<br>' +
-        (data[p].distRemaining / 1000).toFixed(1) + ' km to Leathercote Point<br>' +
-        data[p].Note;
-      var popupText = getPopupBoxText(data[p].E, data[p].N,
-        data[p].Name, popupBoxNote);
-      addMarker(data[p].E, data[p].N, popupText);
-    }
+    document.addEventListener('DOMContentLoaded', start)
   }
 }
 
-function issuesCallback(data) {
-  for (p in data) {
-    if (!isNaN(data[p].E) && !isNaN(data[p].N)) {
-      var txt = getPopupBoxText(data[p].E, data[p].N,
-        data[p].Place, data[p].Issue);
-      var pos = new OpenSpace.MapPoint(data[p].E, data[p].N);
-      var m1 = map.createMarker(pos, getIssuesIcon(), txt);
-      defaultMarkerLayer.removeMarker(m1);
-      issuesLayer.addMarker(m1);
-    }
-  }
-}
-
-function watersourcesCallback(data) {
-  for (p in data) {
-    if (!isNaN(data[p].E) && !isNaN(data[p].N)) {
-      var txt = getPopupBoxText(data[p].E, data[p].N,
-        data[p].Place, data[p].Source);
-      var pos = new OpenSpace.MapPoint(data[p].E, data[p].N);
-      var m1 = map.createMarker(pos, getWatersourcesIcon(), txt);
-      defaultMarkerLayer.removeMarker(m1);
-      watersourcesLayer.addMarker(m1);
-    }
-  }
-}
-
-function recvCoordsDataCallback(data, alreadyComplete) {
-  var points = [];
-  for (p in data) {
-    if (!isNaN(data[p].E) && !isNaN(data[p].N)) {
-      var pt = new OpenLayers.Geometry.Point(data[p].E, data[p].N);
-      points.push(pt);
-    }
-  }
-
-  replaceRoute(points, alreadyComplete);
-}
-
-function recvCoordsDataCallbackCompl(data) {
-  recvCoordsDataCallback(data, true);
-}
-
-function recvCoordsDataCallbackToDo(data) {
-  recvCoordsDataCallback(data, false);
-}
-
-function resizeElementHeight(element) {
-  var height = 0;
-  var body = window.document.body;
-  if (window.innerHeight) {
-    height = window.innerHeight;
-  } else if (body.parentElement.clientHeight) {
-    height = body.parentElement.clientHeight;
-  } else if (body && body.clientHeight) {
-    height = body.clientHeight;
-  }
-  element.style.height = ((height - $(element).offset().top) + "px");
-}
-
-var currentPos = {"E":0,"N":0};
-
-function doneuptoCallback(data) {
-  if (isNaN(data.E) || isNaN(data.N)) {
-    return;
-  }
-  currentPos = data;
-
-  var size = new OpenLayers.Size(36, 36);
-  var offset = new OpenLayers.Pixel(-16, -33);
-  var infoWindowAnchor = new OpenLayers.Pixel(24, 16);
-  var iconUrl = "currentHiker.png";
-  var hikerIcon = new OpenSpace.Icon(iconUrl, size, offset, null, infoWindowAnchor);
-
-  var txt = getPopupBoxText(currentPos.E, currentPos.N,
-              currentPos.Name, currentPos.Note, "<i>Current position: </i>");
-  var posStart = new OpenSpace.MapPoint(currentPos.E,currentPos.N);
-  var mStart = map.createMarker(posStart, hikerIcon, txt);
-  defaultMarkerLayer.removeMarker(mStart);
-  majorMarkers.addMarker(mStart);
-}
-
-var routeStartPos;
-var routeFinishPos;
-
-function majorMarkersCallback(data) {
-  var size = new OpenLayers.Size(32, 32);
-  var offset = new OpenLayers.Pixel(-16, -32);
-  var infoWindowAnchor = new OpenLayers.Pixel(18, 30);
-  var iconUrl = "yellowMarker.png";
-  var yellowIcon = new OpenSpace.Icon(iconUrl, size, offset, null, infoWindowAnchor);
-  var yellowIcon2 = new OpenSpace.Icon(iconUrl, size, offset, null, infoWindowAnchor);
-
-  routeStartPos = data[0];
-  routeFinishPos = data[1];
-  if (!isNaN(routeStartPos.E) && !isNaN(routeStartPos.N)) {
-    var txt = getPopupBoxText(routeStartPos.E, routeStartPos.N,
-                routeStartPos.Name, null, "<u>Start</u>: ");
-    var posStart = new OpenSpace.MapPoint(routeStartPos.E,routeStartPos.N);
-    var mStart = map.createMarker(posStart, yellowIcon, txt);
-
-    defaultMarkerLayer.removeMarker(mStart);
-    majorMarkers.addMarker(mStart);
-  }
-  if (!isNaN(routeFinishPos.E) && !isNaN(routeFinishPos.N)) {
-    var txt = getPopupBoxText(routeFinishPos.E, routeFinishPos.N,
-                 routeFinishPos.Name, null, "<u>Finish</u>: ");
-    var posFinish = new OpenSpace.MapPoint(routeFinishPos.E,routeFinishPos.N);
-    var mFinish = map.createMarker(posFinish, yellowIcon2, txt);
-    defaultMarkerLayer.removeMarker(mFinish);
-    majorMarkers.addMarker(mFinish);
-  }
-
-  $.ajax({
-    url: 'api/waypoints/currentposition',
-    dataType: 'json',
-    success: doneuptoCallback
-  });
-}
-
-var addMajorMarkers = function() {
-  $.ajax({
-    url: "api/waypoints/majormarkers",
-    dataType: 'json',
-    success: majorMarkersCallback
-  });
-}
-
-var loadRoute = function() {
-  $.ajax({
-    url: "api/waypoints/done",
-    dataType: 'json',
-    success: recvCoordsDataCallbackCompl
-  });
-
-  $.ajax({
-    url: "api/waypoints/todo",
-    dataType: 'json',
-    success: recvCoordsDataCallbackToDo
-  });
-}
-
-var setupLayers = function() {
-  defaultMarkerLayer = map.getMarkerLayer();
-  defaultVectorLayer = map.getVectorLayer();
-  defaultVectorLayer.setZIndex(100);
-  map.addControl(new OpenLayers.Control.LayerSwitcher({'ascending':false}));
-    majorMarkers = new OpenLayers.Layer.Markers("Start+Now+Finish");
-  map.addLayer(majorMarkers);
-    watersourcesLayer = new OpenLayers.Layer.Markers("Major sources");
-  map.addLayer(watersourcesLayer);
-    issuesLayer = new OpenLayers.Layer.Markers("Issues");
-  map.addLayer(issuesLayer);
-}
-
-var initMap = function() {
-  map = new OpenSpace.Map("mapdiv");
-      setupLayers();
-  map.setCenter(new OpenSpace.MapPoint(362000, 600000), zoom);
-  addMajorMarkers();
-  var sl = new OpenLayers.Control.ScaleLine();
-  sl.maxWidth = 160;
-  map.addControl(sl);
-
-  //map.events.register("zoomend", map, handleZoomend );
-  map.events.register("moveend", map, handleMoveend );
-}
-
-var start = function() {
-  resizeElementHeight($("#mapdiv")[0]);
-  initMap();
-  loadRoute();
-}
-
-$(document).ready(start);
+ready()

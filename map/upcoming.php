@@ -35,6 +35,12 @@
     font-size: 0.84em;
     margin-left: 2em;
 }
+.dist
+{
+    float: left;
+    font-size: 0.7em;
+    margin-left: 1em;
+}
 .i100k
 {
     float: left;
@@ -66,10 +72,16 @@
         margin-left: 0.3em;
         font-size: 2.6em;
     }
+    .dist
+    {
+        font-size: 1.8em;
+        margin-right: 0.8em;
+    }
     .name
     {
-        margin-left: 1em;
+        margin-left: 2.4em;
         font-size: 3em;
+        clear: left;
     }
     .note
     {
@@ -87,7 +99,8 @@
 <body>
 
 <?php
-$base = "http://" . $_SERVER['SERVER_NAME'] . substr($_SERVER['REQUEST_URI'], 0, strpos($_SERVER['REQUEST_URI'], basename(__FILE__)));
+$protocol = (isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS'])) ? 'https' : 'http';
+$base = $protocol . "://" . $_SERVER['SERVER_NAME'] . substr($_SERVER['REQUEST_URI'], 0, strpos($_SERVER['REQUEST_URI'], basename(__FILE__)));
 ?>
 
 <script>
@@ -95,10 +108,12 @@ $base = "http://" . $_SERVER['SERVER_NAME'] . substr($_SERVER['REQUEST_URI'], 0,
         const setCurPosnUrl = '<?php echo $base ?>' + 'api/waypoints/currentposition/' + e + '/' + n
         const xhr = new XMLHttpRequest()
         xhr.open("POST", setCurPosnUrl, true)
+        xhr.onreadystatechange = function() {
+            if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                window.location.reload()
+            }
+        }
         xhr.send()
-        setTimeout(() => {
-            window.location.reload()
-        }, 500)
     }
 
 </script>
@@ -122,6 +137,9 @@ for ($i = 0; $i < count($fulljson["mainWS"]); $i++)
     }
 }
 
+$distanceCacheText = file_get_contents("mainWScache.json");
+$distanceCache = json_decode($distanceCacheText, true);
+
 $pointsToDisplay = array_slice($fulljson["mainWS"], $i-5, 160);
 
 foreach($pointsToDisplay as $point)
@@ -140,8 +158,17 @@ foreach($pointsToDisplay as $point)
         echo "<span class=setlink><a onClick=\"updateCurPosn(" . $point["E"] . ", " . $point["N"] . ")\">&target;</a></span>";
     }
 
+    $coordsIndex = $point["E"] . "," . $point["N"];
+    $distFromStart = $distToFinish = "";
+    if (isset($distanceCache[$coordsIndex])) {
+        $distFromStart = round($distanceCache[$coordsIndex]["distFromStart"], 1) . "&nbsp;km";
+        $distToFinish = round($distanceCache[$coordsIndex]["distToFinish"], 1) . "&nbsp;km";
+    }
+
     echo "<span class=\"i100k " . $curPosnClass . "\">" . $point["E"] . "</span>" .
         "<span class=\"i100k " . $curPosnClass . "\">". $point["N"] . "</span>" .
+        "<span class=\"dist " . $distFromStart . "\">". $distFromStart . "</span>" .
+        "<span class=\"dist " . $distToFinish . "\">". $distToFinish . "</span>" .
         "<span class=\"name " . $curPosnClass . "\">" . $point["Name"] . "</span>" .
         "<span class=\"note " . $curPosnClass . "\">" . $point["Note"] . "</span>";
 
