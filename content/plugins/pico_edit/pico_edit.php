@@ -18,13 +18,10 @@ final class Pico_Edit extends AbstractPicoPlugin {
   private $plugin_path = '';
   private $password = '';
 
-  private $lastLoginId = -1;
-
   public function onPageRendering(Twig_Environment &$twig, array &$twig_vars, &$templateName)
   {
     $twig_vars['pico_edit_url'] = $this->getPageUrl( 'pico_edit' );
     if( $this->is_logout ) {
-      setcookie('picoeditsession', 0, 0, '/');
       session_destroy();
       header( 'Location: '. $twig_vars['pico_edit_url'] );
       exit;
@@ -45,27 +42,19 @@ final class Pico_Edit extends AbstractPicoPlugin {
       }
 
       if( !isset($_SESSION['backend_logged_in'] ) || !$_SESSION['backend_logged_in'] ) {
-        if (isset($_COOKIE['picoeditsession']) && $_COOKIE['picoeditsession'] == $this->lastLoginId) {
-          $_SESSION['backend_logged_in'] = true;
-          $_SESSION['backend_config'] = $twig_vars['config'];
-        }
-        else {
-          if( isset($_POST['password'] ) ) {
-            if( hash('sha256', $_POST['password'] ) == $this->password ) {
-              $_SESSION['backend_logged_in'] = true;
-              $_SESSION['backend_config'] = $twig_vars['config'];
-              $this->lastLoginId = mt_rand(1, 99999999);
-              setcookie('picoeditsession', $this->lastLoginId, time()+(86400*30), '/');
-            }
-            else {
-              $twig_vars['login_error'] = 'Invalid password.';
-              echo $twig_editor->render('login.html', $twig_vars); // Render login.html
-              exit;
-            }
-          } else {
+        if( isset($_POST['password'] ) ) {
+          if( hash('sha256', $_POST['password'] ) == $this->password ) {
+            $_SESSION['backend_logged_in'] = true;
+            $_SESSION['backend_config'] = $twig_vars['config'];
+          }
+          else {
+            $twig_vars['login_error'] = 'Invalid password.';
             echo $twig_editor->render('login.html', $twig_vars); // Render login.html
             exit;
           }
+        } else {
+          echo $twig_editor->render('login.html', $twig_vars); // Render login.html
+          exit;
         }
       }
 

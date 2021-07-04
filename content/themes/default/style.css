@@ -20,7 +20,7 @@ table, caption, tbody, tfoot, thead, tr, th, td {
     outline: 0;
     font-weight: inherit;
     font-style: inherit;
-    font-size: 98%;
+    font-size: 100%;
     font-family: sans-serif;
     vertical-align: baseline;
 }
@@ -308,8 +308,7 @@ dd {
 
 
 
-#watershedHeader
-{
+#watershedHeader {
   position: relative;
   top: 0em;
   width: 100%;
@@ -321,15 +320,13 @@ dd {
   font-weight: 900;
 }
 
-#watershedHeader nav ul
-{
+#watershedHeader nav ul {
   margin: 0px;
   margin-left: 1.5em;
   -webkit-padding-start: 0px;
 }
 
-#watershedHeader nav ul li
-{
+#watershedHeader nav ul li {
   display:inline;
   padding-right: 2em;
   text-align: -webkit-match-parent;
@@ -337,10 +334,13 @@ dd {
   margin-left: 1.5em;
 }
 
-#watershedHeader nav ul li a
-{
+#watershedHeader nav ul li a {
   text-decoration: none;
   color: white;
+}
+
+section#content p {
+  line-height: 130%;
 }
 
 .post {
